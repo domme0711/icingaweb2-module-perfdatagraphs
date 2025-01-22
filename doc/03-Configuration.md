@@ -2,7 +2,7 @@
 
 ## Backend Configuration
 
-A "backend module", which is reponsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.), can be configured:
+A "backend module", which is responsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.), can be configured:
 
 1. Install the Icinga Web Performance Data Graphs backend module you need (depending on where Icinga2 sends its data)
 2. If you only install one backend module, you do not need to configure it
@@ -10,15 +10,15 @@ A "backend module", which is reponsible for fetching the data from a performance
 
 ## Custom Variables
 
-Icinag 2 Custom Variables can be used to modify the rendering of graphs.
+Icinga 2 Custom Variables can be used to modify the rendering of graphs.
 
-The custom variables `perfdatagraphs_metrics` is used to modify a specific graph:
+The custom variables `perfdatagraphs_metrics (dictionary)` is used to modify a specific graph:
 
 - `unit`, unit of this metric that should be displayed
 - `fill`, color of the inside of the graph
 - `stroke` color of the line of the graph
 
-The variable `perfdatagraphs_metrics` is a dictionary, its keys are the name of the metric
+The variable `perfdatagraphs_metrics (bool)` is a dictionary, its keys are the name of the metric
 you want to modify. Examples:
 
 ```
@@ -45,15 +45,25 @@ apply Service "icinga" {
 }
 ```
 
-The custom variable `perfdatagraphs_config_metrics_include` is used to select specific metrics that
-should be rendered, if not set all metrics are rendered.
+The custom variable `perfdatagraphs_config_metrics_include (array[string])` is used to select specific metrics that
+should be rendered, if not set all metrics are rendered. Wildcards can be used with: `*`.
 
-The custom variable `perfdatagraphs_config_metrics_exclude` is used to exclude a metric.
+The custom variable `perfdatagraphs_config_metrics_exclude (array[string])` is used to exclude a metric.
 This takes precedence over the include.
 
+Examples:
+
 ```
-apply Service "disk" {
-  vars.perfdatagraphs_config_metrics_include = ['/', '/data*']
-  vars.perfdatagraphs_config_metrics_exclude = ['/data_to_exclude']
+apply Service "icinga" {
+  vars.perfdatagraphs_config_metrics_include = ["uptime", "*_latency"]
+  vars.perfdatagraphs_config_metrics_exclude = ["avg_latency"]
 }
 ```
+
+### Custom Variable Design Decisions
+
+In order to ease integration with Icinga Directory, in which Icinga2 dictionary data types are currently
+no the easiest to work with, we decided to use "flat" data types where possible (e.g. `perfdatagraphs_config_disable`).
+
+However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
+would have increased the complexity of the code base.
