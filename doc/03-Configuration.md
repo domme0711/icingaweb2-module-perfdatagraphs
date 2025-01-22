@@ -18,7 +18,7 @@ The custom variables `perfdatagraphs_metrics (dictionary)` is used to modify a s
 - `fill`, color of the inside of the graph
 - `stroke` color of the line of the graph
 
-The variable `perfdatagraphs_metrics (bool)` is a dictionary, its keys are the name of the metric
+The variable `perfdatagraphs_metrics` is a dictionary, its keys are the name of the metric
 you want to modify. Examples:
 
 ```
@@ -37,7 +37,7 @@ apply Service "apt" {
 }
 ```
 
-The custom variable `perfdatagraphs_config_disable` is used to disable a specific graph.
+The custom variable `perfdatagraphs_config_disable (bool)` is used to disable a specific graph.
 
 ```
 apply Service "icinga" {
