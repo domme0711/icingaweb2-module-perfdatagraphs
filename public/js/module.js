@@ -10,7 +10,6 @@
 
     const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
 
-
     class Perfdatagraphs extends Icinga.EventListener {
         // data contains the fetched chart data with the element ID where it is rendered as key.
         // Where we store data inbetween the autorefresh.
@@ -168,7 +167,6 @@
                     success: function(data) {
                         // On success we start rendering the chart
                         $('i.spinner').hide();
-                        $(CHARTERRORCLASS).hide();
                         _this.data.set(elem.getAttribute('id'), data);
                     }
                 });
@@ -216,9 +214,11 @@
             this.plots = new Map();
 
             this.data.forEach((data, elemID, map) => {
+                $(CHARTERRORCLASS).hide()
+
                 // Check if we got data and display error if we don't
                 if (!Array.isArray(data) || !data.length) {
-                    $(CHARTERRORCLASS).text('No data available').show();
+                    $(CHARTERRORCLASS).show().text('No data available');
                     return;
                 }
 
