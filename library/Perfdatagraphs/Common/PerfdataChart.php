@@ -80,9 +80,9 @@ trait PerfdataChart
             'data-checkcommand' => $checkCommandName,
         ]);
 
-        // This element cal be used in JS to show error messages when fetching data fails.
+        // This element can be used to show error messages when fetching data fails.
         $error = HtmlElement::create('p', [
-            'class' => 'line-chart-data-error',
+            'class' => 'line-chart-error preformatted',
         ], $this->translate('Error while fetching performance data'));
 
         // Add a headline and all other elements to our element.

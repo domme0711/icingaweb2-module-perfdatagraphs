@@ -3,9 +3,13 @@
     'use strict';
 
     // The element in which we will add the charts
-    const CHARTCLASS = '.line-chart'
+    const CHARTCLASS = '.line-chart';
 
-    const FETCH_ENDPOINT = '/perfdatagraphs/fetch'
+    // The element in which we will show errors
+    const CHARTERRORCLASS = 'p.line-chart-error';
+
+    const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
+
 
     class Perfdatagraphs extends Icinga.EventListener {
         // data contains the fetched chart data with the element ID where it is rendered as key.
@@ -156,7 +160,7 @@
                         // TODO This could use improvement. Maybe write it to a DOM element?
                         $('i.spinner').hide();
                         _this.icinga.logger.error(request.responseText)
-                        $('p.line-chart-data-error').show();
+                        $(CHARTERRORCLASS).show();
                     },
                     beforeSend: function() {
                         $('i.spinner').show();
@@ -164,7 +168,7 @@
                     success: function(data) {
                         // On success we start rendering the chart
                         $('i.spinner').hide();
-                        $('p.line-chart-data-error').hide();
+                        $(CHARTERRORCLASS).hide();
                         _this.data.set(elem.getAttribute('id'), data);
                     }
                 });
@@ -214,7 +218,7 @@
             this.data.forEach((data, elemID, map) => {
                 // Check if we got data and display error if we don't
                 if (!Array.isArray(data) || !data.length) {
-                    $('p.line-chart-data-error').text('No data available').show();
+                    $(CHARTERRORCLASS).text('No data available').show();
                     return;
                 }
 
