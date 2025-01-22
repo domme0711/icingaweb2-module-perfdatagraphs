@@ -28,7 +28,7 @@ class ModuleConfig
         // Try to load the configuration
         if ($moduleConfig === null) {
             try {
-                $moduleConfig = Config::module('graphs');
+                $moduleConfig = Config::module('perfdatagraphs');
             } catch (Exception $e) {
                 Logger::error('Failed to load Performance Data Graphs module configuration: %s', $e);
                 return $default;

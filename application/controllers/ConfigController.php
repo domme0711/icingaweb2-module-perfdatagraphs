@@ -34,7 +34,7 @@ class ConfigController extends CompatController
     public function generalAction(): void
     {
         // Get the configuration for this module.
-        $config = Config::module('graphs');
+        $config = Config::module('perfdatagraphs');
 
         // Render the ConfigForm and handle requests.
         $form = (new PerfdataGraphsConfigForm())
