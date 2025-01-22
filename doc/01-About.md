@@ -30,7 +30,7 @@ This should also be used as a reference for future development.
 ### Warning and Critical Series
 
 If available the warning and critical series are disabled by default.
-Rational behind this was, that often times these values are many times higher than
+Rationale behind this was, that often times these values are many times higher than
 the perfdata values. This would cause the actual values to be almost invisible.
 
 ### Custom Variables
@@ -40,6 +40,13 @@ no the easiest to work with, we decided to use "flat" data types where possible 
 
 However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
 would have increased the complexity of the code base.
+
+### Missing Data
+
+Missing data is not shown in the charts, this might cause gaps in the rendering.
+We will not take any steps to hide these or provide a default in case of missing data.
+Rationale behind this was, to transparently show the incomplete data and avoid
+wrong interpretation when data is set to a default value.
 
 ## Units
 
