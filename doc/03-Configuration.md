@@ -59,11 +59,3 @@ apply Service "icinga" {
   vars.perfdatagraphs_config_metrics_exclude = ["avg_latency"]
 }
 ```
-
-### Custom Variable Design Decisions
-
-In order to ease integration with Icinga Directory, in which Icinga2 dictionary data types are currently
-no the easiest to work with, we decided to use "flat" data types where possible (e.g. `perfdatagraphs_config_disable`).
-
-However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
-would have increased the complexity of the code base.

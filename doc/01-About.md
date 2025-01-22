@@ -22,6 +22,25 @@ Configuration options are limited by design.
   * Fetched data is cached to improve speed and reduce load on the backend
 * Graphs are adjustable via Icinga 2 custom variables
 
+## Design Decisions
+
+Here are some of our design decisions in order to understand why the module works the way it does.
+This should also be used as a reference for future development.
+
+### Warning and Critical Series
+
+If available the warning and critical series are disabled by default.
+Rational behind this was, that often times these values are many times higher than
+the perfdata values. This would cause the actual values to be almost invisible.
+
+### Custom Variables
+
+In order to ease integration with Icinga Directory, in which Icinga2 dictionary data types are currently
+no the easiest to work with, we decided to use "flat" data types where possible (e.g. `perfdatagraphs_config_disable`).
+
+However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
+would have increased the complexity of the code base.
+
 ## Units
 
 Values for the y-axis are automatically transformed into the following metric (SI) prefixes:
