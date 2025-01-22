@@ -1,7 +1,7 @@
 # Installation
 
-The installation includes this module, which is reponsible for rendering the data
-and a "backend module", which is reponsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.)
+The installation includes this module, which is responsible for rendering the data
+and a "backend module", which is responsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.)
 
 ## From source
 

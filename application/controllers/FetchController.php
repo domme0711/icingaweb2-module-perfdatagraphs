@@ -35,21 +35,12 @@ class FetchController extends CompatController
         $service = $this->params->getRequired('service');
         $checkcommand = $this->params->getRequired('checkcommand');
         $duration = $this->params->get('duration', 'PT12H');
-        $metrics = [];
-
-        // Get the custom vars for the given object.
-        $customvars = $this->getCustomVarsFromDatabase($host, $service);
-        $metrics = $customvars['metrics'] ?? [];
 
         // Fetch the perfdata for a given object via the hook.
-        $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration, $metrics);
+        $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration);
 
-        // Merge everything into the response.
-        // We could have also done this browser-side but decided to do this here
-        // because of simpler testability.
-        $data = $this->mergeCustomVars($perfdata, $customvars);
         // Use gzip encoding to reduce the amount of transfered data
-        $body = gzencode(Json::sanitize($data));
+        $body = gzencode(Json::sanitize($perfdata));
 
         // Return the everything as a JSON reposonse.
         $response = $this->getResponse();

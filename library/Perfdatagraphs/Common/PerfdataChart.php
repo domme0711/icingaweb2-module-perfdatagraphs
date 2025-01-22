@@ -29,6 +29,13 @@ trait PerfdataChart
         // Generic container for all elements we want to create here.
         $html = HtmlElement::create('section', ['class' => 'perfdata-charts']);
 
+        // Check if charts are disabled for this object, if so we just return.
+        $cvh = new CustomVarsHelper();
+        $customvars = $cvh->getPerfdataGraphsConfigForObject($object);
+        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_DISABLE] ?? false) {
+            return $html;
+        }
+
         // Check if there are no perfdata for this object.
         if (empty($object->state->performance_data)) {
             return $html;

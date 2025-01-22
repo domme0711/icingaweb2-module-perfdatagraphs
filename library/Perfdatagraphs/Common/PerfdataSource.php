@@ -4,12 +4,9 @@ namespace Icinga\Module\Perfdatagraphs\Common;
 
 use Icinga\Module\Perfdatagraphs\Common\ModuleConfig;
 
-use Icinga\Application\Logger;
-use Icinga\Module\Icingadb\Common\Database;
-use Icinga\Module\Icingadb\Model\Host;
-use Icinga\Module\Icingadb\Model\Service;
+use Icinga\Module\Icingadb\Util\PerfDataSet;
 
-use ipl\Stdlib\Filter;
+use Icinga\Application\Logger;
 
 use Exception;
 
@@ -18,8 +15,6 @@ use Exception;
  */
 trait PerfdataSource
 {
-    use Database;
-
     /**
      * fetchDataViaHook calls the configured PerfdataSourceHook to fetch the perfdata from the backend.
      * We use a method here, to simplify testing.
@@ -28,13 +23,63 @@ trait PerfdataSource
      * @param string $service Name of the service
      * @param string $checkcommand Name of the checkcommand
      * @param string $duration Duration for which to fetch the data
-     * @param array $metrics List of metrics to fetch
      *
      * @return array
      */
-    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration, array $metrics): array
+    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration): array
     {
         $data = [];
+
+        // Get the object so that we can get its custom variables.
+        $cvh = new CustomVarsHelper();
+        $object = $cvh->getObjectFromString($host, $service);
+
+        // If there's no object we can just stop here.
+        if (empty($object)) {
+            return $data;
+        }
+
+        $customvars = $cvh->getPerfdataGraphsConfigForObject($object);
+
+        // List that contains the metrics we want from the backend.
+        // TODO: Maybe move the filtering logic to another method for simpler testing,
+        // for now it's OK since I don't know if this logic stays as is.
+        $metrics = [];
+
+        // First let's load the list of all performance data that is available for this object
+        $objectPerfData = PerfDataSet::fromString($object->state->normalized_performance_data)->asArray();
+
+        if (isset($objectPerfData)) {
+            $metrics = array_map(function ($item) {
+                return $item->getLabel();
+            }, $objectPerfData);
+        }
+
+        // Then reduce it to only include the ones that are requested via the custom variable
+        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_INCLUDE] ?? false) {
+            // Resolve all wildcards in the list and leave only the matching metrics.
+            $metricsToInclude = $customvars[$cvh::CUSTOM_VAR_CONFIG_INCLUDE];
+            $metricsIncluded = array_filter($metrics, function ($metric) use ($metricsToInclude) {
+                foreach ($metricsToInclude as $pattern) {
+                    if (fnmatch($pattern, $metric)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            $metrics = $metricsIncluded;
+        }
+
+        // Finally remove all that are explicitly to be removed
+        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_EXCLUDE] ?? false) {
+            $metricsToExclude = $customvars[$cvh::CUSTOM_VAR_CONFIG_EXCLUDE];
+            $metricsExcluded = array_diff($metrics, $metricsToExclude);
+
+            $metrics = $metricsExcluded;
+        }
+
+        // Now we get the configured hook to fetch the requested data.
 
         /** @var PerfdataSourceHook $hook */
         $hook = ModuleConfig::getHook();
@@ -52,98 +97,11 @@ trait PerfdataSource
             Logger::error('Failed to call PerfdataSource hook: %s', $e);
         }
 
-        return $data;
-    }
-
-    /**
-     * getCustomVarsFromDatabase returns an Icinga2 object given a string.
-     * We use a method here, to simplify testing.
-     *
-     * @param string $hostName Name of the host
-     * @param string $serviceName Name of the service
-     *
-     * @return array
-     */
-    public function getCustomVarsFromDatabase(string $hostName, string $serviceName): array
-    {
-        // Use the IcingaDB Database Connection
-        $db = $this->getDb();
-
-        // Determine the type if Model we need to use to get the data
-        if (empty($serviceName)) {
-            $query = Host::on($this->getDb());
-            $query->filter(Filter::equal('host.name', $hostName));
-        } else {
-            $query = Service::on($this->getDb());
-            $query->filter(Filter::all(
-                Filter::equal('service.name', $serviceName),
-                Filter::equal('host.name', $hostName)
-            ));
-        }
-
-        // Resolve the query. We could maybe return here, and do the following
-        // in another method.
-        $object = $query->first();
-
-        $data = [];
-
-        if (empty($object)) {
-            return $data;
-        }
-
-        // Get the object's custom variables and decode them
-        $customvars = $object->customvar->columns(['name', 'value']);
-
-        $customvar_key = 'graphs';
-
-        $result = [];
-        foreach ($customvars as $row) {
-            // We are only interested in our custom vars
-            if ($row->name === $customvar_key) {
-                $result[$row->name] = json_decode($row->value, true) ?? $row->value;
-            }
-        }
-
-        return $result[$customvar_key] ?? [];
-    }
-
-    /**
-     * mergeCustomVars merges the performance data with the custom vars,
-     * so that each series receives its corresponding vars.
-     * CustomVars override data in the PerfData.
-     *
-     * We could have also done this browser-side but decided to do this here
-     * because of simpler testability. We could change that if browser-side merging
-     * is more performant.
-     *
-     * If the functionality remains here, we should optimize if for performance.
-     *
-     * @param array $perfdata The entire performance dataset
-     * @param array $customvars The custom variables for the given object
-     * @return array
-     */
-    public function mergeCustomVars(array $perfdata, array $customvars): array
-    {
-        // If we don't have any custom vars return early
-        if (empty($customvars)) {
-            return $perfdata;
-        }
-
-        foreach ($perfdata as $dkey => $dataset) {
-            $title = $dataset['title'] ?? 'No Name';
-            // Merge the custom vars for the entire dataset
-            if (array_key_exists($title, $customvars)) {
-                if (isset($customvars[$title]['unit'])) {
-                    $perfdata[$dkey]['unit'] = $customvars[$title]['unit'];
-                }
-                if (isset($customvars[$title]['fill'])) {
-                    $perfdata[$dkey]['fill'] = $customvars[$title]['fill'];
-                }
-                if (isset($customvars[$title]['stroke'])) {
-                    $perfdata[$dkey]['stroke'] = $customvars[$title]['stroke'];
-                }
-            }
-        }
+        // Merge everything into the response.
+        // We could have also done this browser-side but decided to do this here
+        // because of simpler testability.
+        $customVarsMetrics = $cvh->getPerfdataGraphsMetricsForObject($object);
+        $perfdata = $cvh->mergeCustomVars($data, $customVarsMetrics);
 
         return $perfdata;
     }
