@@ -2,21 +2,12 @@
 
 namespace Tests\Icinga\Module\Perfdatagraphs;
 
-use Icinga\Module\Perfdatagraphs\Common\PerfdataSource;
+use Icinga\Module\Perfdatagraphs\Common\CustomVarsHelper;
 
 use PHPUnit\Framework\TestCase;
 
-final class PerfdataSourceTest extends TestCase
+final class CustomVarsHelperTest extends TestCase
 {
-    use PerfdataSource;
-
-    public function test_fetchDataViaHook_with_no_hook()
-    {
-        $data = $this->fetchDataViaHook('host', 'service', 'checkcommand', 'P1Y', []);
-
-        $this->assertEquals([], $data);
-    }
-
     public function test_mergeCustomVars_without_customvars()
     {
         $perfdata = [
@@ -104,7 +95,8 @@ final class PerfdataSourceTest extends TestCase
         ];
 
 
-        $actual = $this->mergeCustomVars($perfdata, []);
+        $cvh = new CustomVarsHelper();
+        $actual = $cvh->mergeCustomVars($perfdata, []);
 
         $this->assertEquals($expected, $actual);
     }
@@ -147,12 +139,10 @@ final class PerfdataSourceTest extends TestCase
         ];
 
         $customvars = [
-            'graphs' => [
-                'unload' => [
-                    'unit' => 'load',
-                    'fill' => 'rgba(1, 1, 1, 1)',
-                    'stroke' => 'rgba(2, 2, 2, 2)',
-                ]
+            'unload' => [
+                'unit' => 'load',
+                'fill' => 'rgba(1, 1, 1, 1)',
+                'stroke' => 'rgba(2, 2, 2, 2)',
             ]
         ];
 
@@ -193,7 +183,8 @@ final class PerfdataSourceTest extends TestCase
             ]
         ];
 
-        $actual = $this->mergeCustomVars($perfdata, $customvars);
+        $cvh = new CustomVarsHelper();
+        $actual = $cvh->mergeCustomVars($perfdata, $customvars);
 
         $this->assertEquals($expected, $actual);
     }
