@@ -1,5 +1,3 @@
-
-
 # Icinga Web Performance Data Graphs
 
 Icinga Web Module for Performance Data Graphs. This module enables graphs on the Host and Service Detail View for
@@ -27,13 +25,25 @@ Configuration options are limited by design.
 Here are some of our design decisions in order to understand why the module works the way it does.
 This should also be used as a reference for future development.
 
-### Warning and Critical Series
+### A chart for each metric
+
+There is a seperate chart for each metric because the magnitude of performance data for a single check plugin
+can vary widely. Meaning one metric could be double digits and another only fractions.
+Custom configuration for when metrics should be combined in a single chart would highly
+increase the complexity of this module.
+
+### Fixed time range selection
+
+We decided to have a fixed set of time range to choose from.
+Having user input for the time ranges would increase the complexity of this module.
+
+### Warning and critical series
 
 If available the warning and critical series are disabled by default.
 Rationale behind this was, that often times these values are many times higher than
 the perfdata values. This would cause the actual values to be almost invisible.
 
-### Custom Variables
+### Custom variables
 
 In order to ease integration with Icinga Directory, in which Icinga2 dictionary data types are currently
 no the easiest to work with, we decided to use "flat" data types where possible (e.g. `perfdatagraphs_config_disable`).
@@ -41,7 +51,7 @@ no the easiest to work with, we decided to use "flat" data types where possible 
 However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
 would have increased the complexity of the code base.
 
-### Missing Data
+### Missing data
 
 Missing data is not shown in the charts, this might cause gaps in the rendering.
 We will not take any steps to hide these or provide a default in case of missing data.
