@@ -16,6 +16,22 @@ use Exception;
 class ModuleConfig
 {
     /**
+     * getHookbyName loads a Hook via its name
+     *
+     * @return ?PerfdataSourceHook
+     */
+    public static function getHookByName(string $name): ?PerfdataSourceHook
+    {
+        $hooks = Hook::all('perfdatagraphs/PerfdataSource');
+        foreach ($hooks as $hook) {
+            if ($name === $hook->getName()) {
+                return $hook;
+            }
+        }
+        return null;
+    }
+
+    /**
      * getHook loads the configured hook from the configuration
      *
      * @return ?PerfdataSourceHook

@@ -45,6 +45,15 @@ apply Service "icinga" {
 }
 ```
 
+The custom variable `perfdatagraphs_config_backend (string)` is used to set a specific backend for an object.
+If the backend is not available no data will be returned.
+
+```
+apply Service "users" {
+  vars.perfdatagraphs_config_backend = "MyCustomGraphiteBackend"
+}
+```
+
 The custom variable `perfdatagraphs_config_metrics_include (array[string])` is used to select specific metrics that
 should be rendered, if not set all metrics are rendered. Wildcards can be used with: `*`.
 
