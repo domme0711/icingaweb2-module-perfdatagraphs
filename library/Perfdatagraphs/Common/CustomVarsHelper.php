@@ -179,23 +179,28 @@ class CustomVarsHelper
      */
     public function mergeCustomVars(array $perfdata, array $customvars): array
     {
-        // If we don't have any custom vars return early
+        // If we don't have any custom vars simply return
         if (empty($customvars)) {
             return $perfdata;
         }
 
-        foreach ($perfdata as $dkey => $dataset) {
+        // If we don't have a data key in the perfdata
+        if (!array_key_exists('data', $perfdata)) {
+            return $perfdata;
+        }
+
+        foreach ($perfdata['data'] as $dkey => $dataset) {
             $title = $dataset['title'] ?? 'No Name';
             // Merge the custom vars for the entire dataset
             if (array_key_exists($title, $customvars)) {
                 if (isset($customvars[$title]['unit'])) {
-                    $perfdata[$dkey]['unit'] = $customvars[$title]['unit'];
+                    $perfdata['data'][$dkey]['unit'] = $customvars[$title]['unit'];
                 }
                 if (isset($customvars[$title]['fill'])) {
-                    $perfdata[$dkey]['fill'] = $customvars[$title]['fill'];
+                    $perfdata['data'][$dkey]['fill'] = $customvars[$title]['fill'];
                 }
                 if (isset($customvars[$title]['stroke'])) {
-                    $perfdata[$dkey]['stroke'] = $customvars[$title]['stroke'];
+                    $perfdata['data'][$dkey]['stroke'] = $customvars[$title]['stroke'];
                 }
             }
         }

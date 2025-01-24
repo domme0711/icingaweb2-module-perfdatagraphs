@@ -39,7 +39,6 @@
 
             this.on('rendered', '#main > .icinga-module', this.rendered, this);
             this.on('click', '.perfdata-charts a.action-link[data-duration]', this.onTimeClick, this);
-            // this.icinga.logger.setLevel('debug');
         }
 
         /**
@@ -143,46 +142,6 @@
          */
         isInvalidData(data)
         {
-            if (data === null) {
-                return 'Info: No data received';
-            }
-
-            if (!Array.isArray(data) || !data.length) {
-                return 'Info: No data received';
-            }
-
-            for (let elem of data) {
-                if (elem.title === undefined) {
-                    return 'Error: Data does not contain title';
-                }
-
-                if (elem.timestamps === undefined) {
-                    return 'Error: Data does not contain timestamps';
-                }
-
-                if (elem.series === undefined) {
-                    return 'Error: Data does not contain values';
-                }
-
-                if (elem.series.length < 1) {
-                    return 'Error: Data does not contain values';
-                }
-
-                for (let set of elem.series) {
-                    if (set.name === undefined) {
-                        return 'Error: Data series does not contain name';
-                    }
-
-                    if (set.data === undefined) {
-                        return 'Error: Data series does not contain values';
-                    }
-
-                    if (this.ensureArray(set.data).length < 1) {
-                        return 'Error: Data series does not contain values';
-                    }
-                }
-            }
-
             return false;
         }
 
@@ -219,30 +178,37 @@
                     data: parameters,
                     dataType: 'json',
                     error: function (request, status, error) {
+                        // Just in case the fetch controller explodes on us.
+                        // There might be a better way.
                         $('i.spinner').hide();
-                        // TODO: There might be a better way.
                         const el = $(request.responseText);
                         const errorMsg = $('p.error-message', el).text();
                         _this.icinga.logger.error('perfdatagraphs:', errorMsg);
-                        $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message') + ': ' + errorMsg).show();
+                        $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message-error') + ': ' + errorMsg).show();
                     },
                     beforeSend: function() {
+                        // We show the spinner when we fetch data
                         $('i.spinner').show();
                     },
                     success: function(data) {
-                        // On success we start rendering the chart
+                        // On success try rendering the chart
                         $('i.spinner').hide();
-                        const isInvalid = _this.isInvalidData(data);
+                        _this.icinga.logger.debug('perfdatagraphs', data);
 
-                        if (isInvalid) {
-                            _this.icinga.logger.warn('perfdatagraphs: data is invalid');
-                            _this.icinga.logger.warn('perfdatagraphs: fetched data', data);
-
-                            $(CHARTERRORCLASS).show().text(isInvalid);
-                        } else {
-                            $(CHARTERRORCLASS).hide()
-                            _this.data.set(elem.getAttribute('id'), data);
+                        if (data.error !== undefined) {
+                            $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message-error') + ': ' + data.error.message).show();
+                            _this.icinga.logger.error('perfdatagraphs', data.error.message);
+                            return;
                         }
+
+                        if (data === null || data.data === undefined) {
+                            $(CHARTERRORCLASS).text($(CHARTERRORCLASS)).attr('data-message-nodata').show();
+                            _this.icinga.logger.warn('perfdatagraphs: no data received');
+                            return;
+                        }
+
+                        $(CHARTERRORCLASS).hide()
+                        _this.data.set(elem.getAttribute('id'), data.data);
                     }
                 });
             }
