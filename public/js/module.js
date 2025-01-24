@@ -69,6 +69,7 @@
             _this.rendered(event);
         }
 
+
         /**
          * formatNumber transforms numbers into metric (SI) prefix notation. Used in the y axis.
          */
@@ -85,6 +86,20 @@
                     u = 0;
                 }
             return nn[0] * Math.pow(10, +nn[1] - (u - zeroIndex) * 3) + unitList[u];
+        }
+
+        /**
+         * ensureArray ensures the given object is an Array.
+         * It will transform Objects if possible.
+         * A dirty PHP 8.0 hack since I sometimes used SplFixedArray.
+         * Can be removed once PHP 8.0 is ancient history.
+         */
+        ensureArray(obj) {
+            if (typeof obj === "object" && !Array.isArray(obj)) {
+                return Object.values(obj);
+            }
+
+            return obj;
         }
 
         /**
@@ -109,7 +124,6 @@
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-
         /**
          * getChartSize is used to recalculate the canvas size based on the
          * object-detail colum width.
@@ -122,6 +136,54 @@
                 width: width - 10,
                 height: 200,
             }
+        }
+
+        /**
+         * isValidData validates the fetched data and returns a boolean.
+         */
+        isInvalidData(data)
+        {
+            if (data === null) {
+                return 'Info: No data received';
+            }
+
+            if (!Array.isArray(data) || !data.length) {
+                return 'Info: No data received';
+            }
+
+            for (let elem of data) {
+                if (elem.title === undefined) {
+                    return 'Error: Data does not contain title';
+                }
+
+                if (elem.timestamps === undefined) {
+                    return 'Error: Data does not contain timestamps';
+                }
+
+                if (elem.series === undefined) {
+                    return 'Error: Data does not contain values';
+                }
+
+                if (elem.series.length < 1) {
+                    return 'Error: Data does not contain values';
+                }
+
+                for (let set of elem.series) {
+                    if (set.name === undefined) {
+                        return 'Error: Data series does not contain name';
+                    }
+
+                    if (set.data === undefined) {
+                        return 'Error: Data series does not contain values';
+                    }
+
+                    if (this.ensureArray(set.data).length < 1) {
+                        return 'Error: Data series does not contain values';
+                    }
+                }
+            }
+
+            return false;
         }
 
         /**
@@ -157,10 +219,12 @@
                     data: parameters,
                     dataType: 'json',
                     error: function (request, status, error) {
-                        // TODO This could use improvement. Maybe write it to a DOM element?
                         $('i.spinner').hide();
-                        _this.icinga.logger.error('perfdatagraphs:', request.responseText);
-                        $(CHARTERRORCLASS).show();
+                        // TODO: There might be a better way.
+                        const el = $(request.responseText);
+                        const errorMsg = $('p.error-message', el).text();
+                        _this.icinga.logger.error('perfdatagraphs:', errorMsg);
+                        $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message') + ': ' + errorMsg).show();
                     },
                     beforeSend: function() {
                         $('i.spinner').show();
@@ -168,8 +232,17 @@
                     success: function(data) {
                         // On success we start rendering the chart
                         $('i.spinner').hide();
-                        _this.icinga.logger.debug('perfdatagraphs: fetched data', data);
-                        _this.data.set(elem.getAttribute('id'), data);
+                        const isInvalid = _this.isInvalidData(data);
+
+                        if (isInvalid) {
+                            _this.icinga.logger.warn('perfdatagraphs: data is invalid');
+                            _this.icinga.logger.warn('perfdatagraphs: fetched data', data);
+
+                            $(CHARTERRORCLASS).show().text(isInvalid);
+                        } else {
+                            $(CHARTERRORCLASS).hide()
+                            _this.data.set(elem.getAttribute('id'), data);
+                        }
                     }
                 });
             }
@@ -216,17 +289,6 @@
             this.plots = new Map();
 
             this.data.forEach((data, elemID, map) => {
-                $(CHARTERRORCLASS).hide()
-
-                // Check if we got data and display error if we don't
-                if (!Array.isArray(data) || !data.length) {
-                    this.icinga.logger.warn('perfdatagraphs: no data in available');
-                    this.icinga.logger.debug('perfdatagraphs:', data);
-
-                    $(CHARTERRORCLASS).show().text('No data available');
-                    return;
-                }
-
                 // Get the element in which we render the chart
                 const elem = document.getElementById(elemID);
 
@@ -297,43 +359,21 @@
 
                 // Create a new uplot chart for each performance dataset
                 data.forEach((dataset) => {
-                    // If we got no data we can abort here
-                    if (!dataset.timestamps) {
-                        this.icinga.logger.warn('perfdatagraphs: no timestamps in dataset');
-                        this.icinga.logger.debug('perfdatagraphs:', dataset);
-
-                        return;
-                    }
-
-                    // A dirty PHP 8.0 hack since I used SplFixedArray
-                    if (typeof dataset.timestamps === "object" && !Array.isArray(dataset.timestamps)) {
-                        dataset.timestamps = Object.values(dataset.timestamps);
-                    }
+                    dataset.timestamps = this.ensureArray(dataset.timestamps);
 
                     // Add a new empty plot with a title for the dataset
                     opts.title = dataset.title;
                     opts.title += dataset.unit ? ' | ' + dataset.unit : '';
                     let u = new uPlot(opts, [], elem);
                     // Where we store the finished data for the chart
-                    let d = [
-                        dataset.timestamps
-                    ];
+                    let d = [dataset.timestamps];
+
                     // Create the data for the plot and add the series
                     // Using a 'classic' for loop since we need the index
                     for (let idx = 0; idx < dataset.series.length; idx++) {
                         // // The series we are going to add (e.g. values, warn, crit, etc.)
                         let set = dataset.series[idx].data;
-                        // If there is not data
-                        if (!set) {
-                            this.icinga.logger.warn('perfdatagraphs: no data in series');
-                            this.icinga.logger.debug('perfdatagraphs:', set);
-                            continue;
-                        }
-
-                        // A dirty PHP 8.0 hack since I used SplFixedArray
-                        if (typeof set === "object" && !Array.isArray(set)) {
-                            set = Object.values(set);
-                        }
+                        set = this.ensureArray(set);
 
                         // See if there are series options from the last autorefresh
                         // if so we use them, otherwise the default.

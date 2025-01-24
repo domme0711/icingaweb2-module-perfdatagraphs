@@ -83,7 +83,8 @@ trait PerfdataChart
         // This element can be used to show error messages when fetching data fails.
         $error = HtmlElement::create('p', [
             'class' => 'line-chart-error preformatted',
-        ], $this->translate('Error while fetching performance data'));
+            'data-message' => $this->translate('Error while fetching performance data'),
+        ]);
 
         // Add a headline and all other elements to our element.
         $header = Html::tag('h2', $this->translate('Performance Data Graph'));
