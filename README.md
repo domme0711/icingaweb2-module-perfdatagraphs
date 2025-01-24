@@ -20,6 +20,10 @@ Configuration options are limited by design.
   * Fetched data is cached to improve speed and reduce load on the backend
 * Graphs are adjustable via Icinga 2 custom variables
 
+## Installation Requirements
+
+* PHP version ≥ 8.0
+
 ## Documentation
 
 Documentation for this module is available at [doc](doc/).

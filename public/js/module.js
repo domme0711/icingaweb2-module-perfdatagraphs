@@ -39,6 +39,7 @@
 
             this.on('rendered', '#main > .icinga-module', this.rendered, this);
             this.on('click', '.perfdata-charts a.action-link[data-duration]', this.onTimeClick, this);
+            // this.icinga.logger.setLevel('debug');
         }
 
         /**
@@ -158,7 +159,7 @@
                     error: function (request, status, error) {
                         // TODO This could use improvement. Maybe write it to a DOM element?
                         $('i.spinner').hide();
-                        _this.icinga.logger.error(request.responseText)
+                        _this.icinga.logger.error('perfdatagraphs:', request.responseText);
                         $(CHARTERRORCLASS).show();
                     },
                     beforeSend: function() {
@@ -167,6 +168,7 @@
                     success: function(data) {
                         // On success we start rendering the chart
                         $('i.spinner').hide();
+                        _this.icinga.logger.debug('perfdatagraphs: fetched data', data);
                         _this.data.set(elem.getAttribute('id'), data);
                     }
                 });
@@ -218,6 +220,9 @@
 
                 // Check if we got data and display error if we don't
                 if (!Array.isArray(data) || !data.length) {
+                    this.icinga.logger.warn('perfdatagraphs: no data in available');
+                    this.icinga.logger.debug('perfdatagraphs:', data);
+
                     $(CHARTERRORCLASS).show().text('No data available');
                     return;
                 }
@@ -293,8 +298,16 @@
                 // Create a new uplot chart for each performance dataset
                 data.forEach((dataset) => {
                     // If we got no data we can abort here
-                    if (!dataset.timestamps || !dataset.timestamps.length) {
+                    if (!dataset.timestamps) {
+                        this.icinga.logger.warn('perfdatagraphs: no timestamps in dataset');
+                        this.icinga.logger.debug('perfdatagraphs:', dataset);
+
                         return;
+                    }
+
+                    // A dirty PHP 8.0 hack since I used SplFixedArray
+                    if (typeof dataset.timestamps === "object" && !Array.isArray(dataset.timestamps)) {
+                        dataset.timestamps = Object.values(dataset.timestamps);
                     }
 
                     // Add a new empty plot with a title for the dataset
@@ -309,10 +322,17 @@
                     // Using a 'classic' for loop since we need the index
                     for (let idx = 0; idx < dataset.series.length; idx++) {
                         // // The series we are going to add (e.g. values, warn, crit, etc.)
-                        const set = dataset.series[idx].data;
+                        let set = dataset.series[idx].data;
                         // If there is not data
-                        if (!set || !set.length) {
+                        if (!set) {
+                            this.icinga.logger.warn('perfdatagraphs: no data in series');
+                            this.icinga.logger.debug('perfdatagraphs:', set);
                             continue;
+                        }
+
+                        // A dirty PHP 8.0 hack since I used SplFixedArray
+                        if (typeof set === "object" && !Array.isArray(set)) {
+                            set = Object.values(set);
                         }
 
                         // See if there are series options from the last autorefresh
