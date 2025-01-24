@@ -5,9 +5,9 @@ namespace Icinga\Module\Perfdatagraphs\Controllers;
 use Icinga\Module\Perfdatagraphs\Forms\PerfdataGraphsConfigForm;
 
 use Icinga\Application\Config;
-use Icinga\Web\Notification;
 use Icinga\Web\Widget\Tabs;
 
+use ipl\Html\HtmlString;
 use ipl\Web\Compat\CompatController;
 
 /**
@@ -33,21 +33,10 @@ class ConfigController extends CompatController
      */
     public function generalAction(): void
     {
-        // Get the configuration for this module.
-        $config = Config::module('perfdatagraphs');
-
-        // Render the ConfigForm and handle requests.
         $form = (new PerfdataGraphsConfigForm())
-            ->populate($config->getSection('general'))
-            ->on(PerfdataGraphsConfigForm::ON_SUCCESS, function ($form) use ($config) {
-                $config->setSection('general', $form->getValues());
-                $config->saveIni();
-                Notification::success($this->translate('New configuration has successfully been stored'));
-            })->handleRequest($this->getServerRequest());
-
-        $this->mergeTabs($this->Module()->getConfigTabs()->activate('general'));
-
-        $this->addContent($form);
+            ->setIniConfig(Config::module('perfdatagraphs'));
+        $form->handleRequest();
+        $this->addContent(new HtmlString($form->render()));
     }
 
     /**
