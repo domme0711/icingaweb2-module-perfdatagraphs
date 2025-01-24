@@ -157,10 +157,12 @@
                     data: parameters,
                     dataType: 'json',
                     error: function (request, status, error) {
-                        // TODO This could use improvement. Maybe write it to a DOM element?
                         $('i.spinner').hide();
-                        _this.icinga.logger.error('perfdatagraphs:', request.responseText);
-                        $(CHARTERRORCLASS).show();
+                        // TODO: There might be a better way.
+                        const el = $(request.responseText);
+                        const errorMsg = $('p.error-message', el).text();
+                        _this.icinga.logger.error('perfdatagraphs:', errorMsg);
+                        $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message') + ': ' + errorMsg).show();
                     },
                     beforeSend: function() {
                         $('i.spinner').show();
