@@ -79,14 +79,17 @@ trait PerfdataSource
             $metrics = $metricsExcluded;
         }
 
-        // Now we get the configured hook to fetch the requested data.
-
-        /** @var PerfdataSourceHook $hook */
-        $hook = ModuleConfig::getHook();
+        // If the object wants the data from a custom backend
+        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_BACKEND] ?? false) {
+            $hook = ModuleConfig::getHookByName($customvars[$cvh::CUSTOM_VAR_CONFIG_BACKEND]);
+        } else {
+            /** @var PerfdataSourceHook $hook */
+            $hook = ModuleConfig::getHook();
+        }
 
         // If there is no hook configured we return here.
         if (empty($hook)) {
-            Logger::warning('No PerfdataSource hook configured.');
+            Logger::warning('No valid PerfdataSource hook configured.');
             return $data;
         }
 

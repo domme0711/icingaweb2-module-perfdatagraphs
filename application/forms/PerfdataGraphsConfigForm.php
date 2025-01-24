@@ -3,14 +3,40 @@
 namespace Icinga\Module\Perfdatagraphs\Forms;
 
 use Icinga\Application\Hook;
-
-use ipl\Web\Compat\CompatForm;
+use Icinga\Forms\ConfigForm;
 
 /**
  * PerfdataGraphsConfigForm represents the configuration form for the PerfdataGraphs Module.
  */
-class PerfdataGraphsConfigForm extends CompatForm
+class PerfdataGraphsConfigForm extends ConfigForm
 {
+    public function init()
+    {
+        $this->setName('form_config_perfdatagraphs');
+        $this->setSubmitLabel($this->translate('Save Changes'));
+    }
+
+    /**
+     * assemble the configuration form with all available options.
+     */
+    public function createElements(array $formData)
+    {
+        $backends = $this->listBackends();
+        $choose = ['' => sprintf(' - %s - ', t('Please choose'))];
+
+        $this->addElement(
+            'select',
+            'perfdatagraphs_default_backend',
+            [
+                'required' => true,
+                'label' => $this->translate('Default Data Backend'),
+                'description' => $this->translate('Default backend for the performance data graphs'),
+                'multiOptions' => array_merge($choose, array_combine($backends, $backends)),
+                'class' => 'autosubmit',
+            ]
+        );
+    }
+
     /**
      * listBackends returns a list of all available PerfdataSource hooks.
      */
@@ -25,33 +51,5 @@ class PerfdataGraphsConfigForm extends CompatForm
         asort($enum);
 
         return $enum;
-    }
-
-    /**
-     * assemble the configuration form with all available options.
-     */
-    protected function assemble(): void
-    {
-        $backends = $this->listBackends();
-
-        $this->addElement('select', 'backend', [
-            'description' => t('Data backend for the Performance Data Graphs'),
-            'label' => t('Performance Data Backend'),
-            'multiOptions' => array_merge(
-                ['' => sprintf(' - %s - ', t('Please choose'))],
-                array_combine($backends, $backends)
-            ),
-            'disable' => [''],
-            'required' => true,
-            'value' => ''
-        ]);
-
-        $this->addElement(
-            'submit',
-            'submit',
-            [
-                'label' => $this->translate('Save Changes')
-            ]
-        );
     }
 }
