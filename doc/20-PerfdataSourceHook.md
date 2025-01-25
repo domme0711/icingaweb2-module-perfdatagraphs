@@ -28,7 +28,15 @@ Parameters:
 
 The section describes the return value of the `fetchData()` method.
 
-The returned PHP array contains objects that describe which describe the chart.
+The returned PHP array must contain a `data` key with objects describing the charts and may contain and `error` key
+that contains a message in case something went wrong:
+
+```
+[
+  "data" => [...]
+  "error" => [...]
+]
+```
 
 Each chart object has the following attributes:
 
@@ -44,28 +52,28 @@ Each series object has the following attributes:
 Example chart and series object:
 
 ```json
-  {
-    "title": "available_upgrades",
-    "timestamps": [
-      1737623700,
-      1737623800
-    ],
-    "series": [
-      {
-        "name": "value",
-        "data": [
-          20,
-          18
-        ]
-      }
-    ]
-  }
+{
+  "title": "available_upgrades",
+  "timestamps": [
+    1737623700,
+    1737623800
+  ],
+  "series": [
+    {
+      "name": "value",
+      "data": [
+        20,
+        18
+      ]
+    }
+  ]
+}
 ```
 
 Full example:
 
 ```json
-[
+"data": [
   {
     "title": "available_upgrades",
     "timestamps": [
