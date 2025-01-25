@@ -377,6 +377,9 @@
                             stroke: stroke,
                             fill: fill,
                             show: show,
+                            // Override the default uplot callback so that smaller values are
+                            // shown in the hover.
+                            value: (self, rawValue) => rawValue,
                         }, idx+1);
                         // Add this to the final data for the chart
                         d.push(set);
