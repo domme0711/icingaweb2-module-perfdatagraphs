@@ -4,10 +4,9 @@
 
     // The element in which we will add the charts
     const CHARTCLASS = '.line-chart';
-
     // The element in which we will show errors
     const CHARTERRORCLASS = 'p.line-chart-error';
-
+    // Enpoint to fetch the data from
     const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
 
     class Perfdatagraphs extends Icinga.EventListener {
@@ -17,6 +16,7 @@
         // plots contains the chart objects with the element ID where it is rendered as key.
         // Used for resizing the charts.
         plots = new Map();
+        // Where we store data inbetween autorefresh
         currentSelect = null;
         currentSeriesShow = {1: true};
         duration = 'PT12H';
@@ -44,9 +44,20 @@
         /**
          * rendered makes sure the data is available and then renderes the charts
          */
-        rendered(event)
+        rendered(event, isAutorefresh)
         {
             let _this = event.data.self;
+
+            if (!isAutorefresh) {
+                // Reset the selection and set the duration when it's
+                // an autorefresh and new data is being loaded.
+                // _this.currentSelect = {min: 0, max: 0};
+                _this.currentSelect = null;
+                _this.currentSeriesShow = {1: true};
+                _this.duration = 'P12H';
+            }
+
+            // Now we fetch and render
             _this.fetchData();
             _this.renderCharts();
         }
@@ -65,7 +76,10 @@
             // These need to be stored inbetween the autorefresh
             _this.currentSelect = {min: 0, max: 0};
             _this.duration = duration;
-            _this.rendered(event);
+
+            // Now we fetch and render
+            _this.fetchData();
+            _this.renderCharts();
         }
 
 
