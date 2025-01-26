@@ -173,6 +173,8 @@
                 return;
             }
 
+            _this.icinga.logger.debug('perfdatagraphs', 'start fetchData', lineCharts);
+
             for (let elem of lineCharts) {
                 // Get the parameters the Hooks added to the element
                 const parameters = {
@@ -207,7 +209,7 @@
                     success: function(data) {
                         // On success try rendering the chart
                         $('i.spinner').hide();
-                        _this.icinga.logger.debug('perfdatagraphs', data);
+                        _this.icinga.logger.debug('perfdatagraphs', 'finish fetchData', data);
 
                         if (data.error !== undefined) {
                             $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message-error') + ': ' + data.error.message).show();
@@ -230,6 +232,7 @@
 
         /**
          * renderCharts creates the canvas objects given the provided datasets.
+         * TODO: Maybe refactor and split up this method a bit.
          */
         renderCharts()
         {
@@ -267,6 +270,8 @@
 
             // Reset the existing plots map for the new rendering
             this.plots = new Map();
+
+            this.icinga.logger.debug('perfdatagraphs', 'start renderCharts', this.data);
 
             this.data.forEach((data, elemID, map) => {
                 // Get the element in which we render the chart
@@ -398,6 +403,7 @@
                     this.plots.set(elem, _plots);
                 });
             });
+            this.icinga.logger.debug('perfdatagraphs', 'finish renderCharts', this.plots);
         }
     }
 
