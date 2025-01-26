@@ -3,6 +3,8 @@
 In order to write a custom backend for the Icinga Web Module for Performance Data Graphs you need to implement
 PerfdataSource hook provided by the module.
 
+⚠️ The return value for the Hook is still being worked on and is likely to change.
+
 ## Input parameters for fetching data
 
 The hook requires the following methods:
@@ -73,7 +75,7 @@ Example chart and series object:
 Full example:
 
 ```json
-"data": [
+{ "data": [
   {
     "title": "available_upgrades",
     "timestamps": [
@@ -106,5 +108,14 @@ Full example:
       }
     ]
   }
-]
+]}
+```
+
+Example error:
+
+```json
+{
+  "data": {},
+  "error": {"message": "Something went wrong"}
+}
 ```
