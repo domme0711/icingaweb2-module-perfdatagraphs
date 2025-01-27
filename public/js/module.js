@@ -54,7 +54,7 @@
                 // _this.currentSelect = {min: 0, max: 0};
                 _this.currentSelect = null;
                 _this.currentSeriesShow = {1: true};
-                _this.duration = 'P12H';
+                _this.duration = 'PT12H';
             }
 
             // Now we fetch and render

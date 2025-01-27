@@ -89,7 +89,8 @@ trait PerfdataSource
 
         // If there is no hook configured we return here.
         if (empty($hook)) {
-            Logger::warning('No valid PerfdataSource hook configured.');
+            // TODO: return the error to the frontend
+            Logger::error('No valid PerfdataSource hook configured.');
             return $data;
         }
 
@@ -97,7 +98,9 @@ trait PerfdataSource
         try {
             $data = $hook->fetchData($host, $service, $checkcommand, $duration, $metrics);
         } catch (Exception $e) {
+            // TODO: return the error to the frontend
             Logger::error('Failed to call PerfdataSource hook: %s', $e);
+            return $data;
         }
 
         // Merge everything into the response.
