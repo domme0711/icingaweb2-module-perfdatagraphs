@@ -58,7 +58,7 @@ We will not take any steps to hide these or provide a default in case of missing
 Rationale behind this was, to transparently show the incomplete data and avoid
 wrong interpretation when data is set to a default value.
 
-## Units
+### Fixed y-axis units
 
 Values for the y-axis are automatically transformed into the following metric (SI) prefixes:
 
