@@ -152,14 +152,6 @@
         }
 
         /**
-         * isValidData validates the fetched data and returns a boolean.
-         */
-        isInvalidData(data)
-        {
-            return false;
-        }
-
-        /**
          * fetchData tries to get the data for the given object from the Controller.
          */
         fetchData()
