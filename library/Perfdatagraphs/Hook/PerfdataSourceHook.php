@@ -2,6 +2,9 @@
 
 namespace Icinga\Module\Perfdatagraphs\Hook;
 
+use Icinga\Module\Monitoring\Plugin\Perfdata;
+use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
+
 /**
  * The PerfdataSourceHook must be implemented by a specific Performance data
  * backend.
@@ -26,15 +29,12 @@ abstract class PerfdataSourceHook
      * as they are without modification specific to the backend. Each backend
      * can modify these if required (e.g. Graphite special characters to dots).
      *
-     * Since we are going to JSON encode the response, a simple array as return
-     * is probably best instead of an object.
-     *
      * @param string $hostName host name for the performance data query
      * @param string $serviceName service name for the performance data query
      * @param string $checkCommand checkcommand name for the performance data query
      * @param string $duration for which to fetch the data for in PHP's DateInterval format (e.g. PT12H, P1D, P1Y)
      * @param array $metrics a list of metrics that are requested, if not set all available metrics should be returned
-     * @return array
+     * @return PerfdataResponse
      */
     abstract public function fetchData(
         string $hostName,
@@ -42,5 +42,5 @@ abstract class PerfdataSourceHook
         string $checkCommand,
         string $duration,
         array $metrics
-    ): array;
+    ): PerfdataResponse;
 }

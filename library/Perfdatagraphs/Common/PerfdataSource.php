@@ -2,9 +2,10 @@
 
 namespace Icinga\Module\Perfdatagraphs\Common;
 
+use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 use Icinga\Module\Perfdatagraphs\Common\ModuleConfig;
 
-use Icinga\Module\Icingadb\Util\PerfDataSet;
+use Icinga\Module\Icingadb\Util\PerfDataSet as IcingaPerfdataSet;
 
 use Icinga\Application\Logger;
 
@@ -24,11 +25,11 @@ trait PerfdataSource
      * @param string $checkcommand Name of the checkcommand
      * @param string $duration Duration for which to fetch the data
      *
-     * @return array
+     * @return PerfdataResponse
      */
-    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration): array
+    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration): PerfdataResponse
     {
-        $data = [];
+        $response = new PerfdataResponse();
 
         // Get the object so that we can get its custom variables.
         $cvh = new CustomVarsHelper();
@@ -36,7 +37,7 @@ trait PerfdataSource
 
         // If there's no object we can just stop here.
         if (empty($object)) {
-            return $data;
+            return $response;
         }
 
         $customvars = $cvh->getPerfdataGraphsConfigForObject($object);
@@ -47,7 +48,7 @@ trait PerfdataSource
         $metrics = [];
 
         // First let's load the list of all performance data that is available for this object
-        $objectPerfData = PerfDataSet::fromString($object->state->normalized_performance_data)->asArray();
+        $objectPerfData = IcingaPerfdataSet::fromString($object->state->normalized_performance_data)->asArray();
 
         if (isset($objectPerfData)) {
             $metrics = array_map(function ($item) {
@@ -89,26 +90,26 @@ trait PerfdataSource
 
         // If there is no hook configured we return here.
         if (empty($hook)) {
-            // TODO: return the error to the frontend
-            Logger::error('No valid PerfdataSource hook configured.');
-            return $data;
+            Logger::error('No valid PerfdataSource hook configured');
+            $response->addError('No valid PerfdataSource hook configured');
+            return $response;
         }
 
         // Try to fetch the data with the hook.
         try {
-            $data = $hook->fetchData($host, $service, $checkcommand, $duration, $metrics);
+            $response = $hook->fetchData($host, $service, $checkcommand, $duration, $metrics);
         } catch (Exception $e) {
-            // TODO: return the error to the frontend
-            Logger::error('Failed to call PerfdataSource hook: %s', $e);
-            return $data;
+            $response->addError(sprintf('Failed to call PerfdataSource hook: %s', $e->getMessage()));
+            return $response;
         }
 
         // Merge everything into the response.
         // We could have also done this browser-side but decided to do this here
         // because of simpler testability.
         $customVarsMetrics = $cvh->getPerfdataGraphsMetricsForObject($object);
-        $perfdata = $cvh->mergeCustomVars($data, $customVarsMetrics);
 
-        return $perfdata;
+        $response->mergeCustomVars($customVarsMetrics);
+
+        return $response;
     }
 }

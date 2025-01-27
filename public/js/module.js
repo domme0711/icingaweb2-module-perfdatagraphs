@@ -151,6 +151,32 @@
             }
         }
 
+        isValidData(data)
+        {
+            if (data === undefined || data.length === 0) {
+                const errorMsg = $(CHARTERRORCLASS).attr('data-message-nodata');
+                $(CHARTERRORCLASS).text(errorMsg).show();
+                this.icinga.logger.warn('perfdatagraphs: no data received');
+                return false;
+            }
+
+            if (data.errors !== undefined) {
+                const errorMsg = $(CHARTERRORCLASS).attr('data-message-error');
+                $(CHARTERRORCLASS).text(errorMsg +':'+ data.errors.join(';')).show();
+                this.icinga.logger.error('perfdatagraphs', data.errors.join(';'));
+                return false;
+            }
+
+            if (data.data === undefined || data.data.length === 0) {
+                const errorMsg = $(CHARTERRORCLASS).attr('data-message-nodata');
+                $(CHARTERRORCLASS).text(errorMsg).show();
+                this.icinga.logger.warn('perfdatagraphs: no data received');
+                return false;
+            }
+
+            return true;
+        }
+
         /**
          * fetchData tries to get the data for the given object from the Controller.
          */
@@ -203,15 +229,7 @@
                         $('i.spinner').hide();
                         _this.icinga.logger.debug('perfdatagraphs', 'finish fetchData', data);
 
-                        if (data.error !== undefined) {
-                            $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message-error') + ': ' + data.error.message).show();
-                            _this.icinga.logger.error('perfdatagraphs', data.error.message);
-                            return;
-                        }
-
-                        if (data === null || data.data === undefined) {
-                            $(CHARTERRORCLASS).text($(CHARTERRORCLASS)).attr('data-message-nodata').show();
-                            _this.icinga.logger.warn('perfdatagraphs: no data received');
+                        if (! _this.isValidData(data)) {
                             return;
                         }
 
@@ -349,7 +367,7 @@
                     // Using a 'classic' for loop since we need the index
                     for (let idx = 0; idx < dataset.series.length; idx++) {
                         // // The series we are going to add (e.g. values, warn, crit, etc.)
-                        let set = dataset.series[idx].data;
+                        let set = dataset.series[idx].values;
                         set = this.ensureArray(set);
 
                         // See if there are series options from the last autorefresh
