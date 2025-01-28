@@ -160,10 +160,10 @@
                 return false;
             }
 
-            if (data.errors !== undefined) {
+            if (data.errors !== undefined && data.errors.length > 0) {
                 const errorMsg = $(CHARTERRORCLASS).attr('data-message-error');
-                $(CHARTERRORCLASS).text(errorMsg +':'+ data.errors.join(';')).show();
-                this.icinga.logger.error('perfdatagraphs', data.errors.join(';'));
+                $(CHARTERRORCLASS).text(errorMsg +': '+ data.errors.join('; ')).show();
+                this.icinga.logger.error('perfdatagraphs', data.errors.join('; '));
                 return false;
             }
 
