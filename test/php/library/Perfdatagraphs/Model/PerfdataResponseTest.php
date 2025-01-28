@@ -26,7 +26,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->addError('WRONG!');
 
-        $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertEquals($expected, $actual);
@@ -48,7 +48,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->mergeCustomVars([]);
 
-        $expected = '{"data":[{"title":"myset","unit":"theunit","series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertEquals($expected, $actual);
@@ -78,7 +78,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->mergeCustomVars($customvars);
 
-        $expected = '{"data":[{"title":"myset","unit":"load","fill":"rgba(1, 1, 1, 1)","stroke":"rgba(2, 2, 2, 2)","series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset","unit":"load","fill":"rgba(1, 1, 1, 1)","stroke":"rgba(2, 2, 2, 2)","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertEquals($expected, $actual);

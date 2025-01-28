@@ -39,6 +39,11 @@ class FetchController extends CompatController
         // Fetch the perfdata for a given object via the hook.
         $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration);
 
+        if (! $perfdata->isValid()) {
+            // If the data is not valid, return an error
+            $perfdata->addError('Invalid data received');
+        }
+
         // Use gzip encoding to reduce the amount of transfered data
         $body = gzencode(Json::sanitize($perfdata));
 

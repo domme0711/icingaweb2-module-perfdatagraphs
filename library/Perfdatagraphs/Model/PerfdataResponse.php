@@ -6,9 +6,9 @@ use JsonSerializable;
 
 class PerfdataResponse implements JsonSerializable
 {
-    protected array $data;
+    protected array $data = [];
 
-    protected array $errors;
+    protected array $errors = [];
 
     public function addError(string $e): void
     {
@@ -21,6 +21,21 @@ class PerfdataResponse implements JsonSerializable
             return true;
         }
         return false;
+    }
+
+    public function isValid(): bool
+    {
+        if (count($this->data) === 0) {
+            return false;
+        }
+
+        foreach ($this->data as $dataset) {
+            if (!$dataset->isValid()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function addDataset(PerfdataSet $ds): void

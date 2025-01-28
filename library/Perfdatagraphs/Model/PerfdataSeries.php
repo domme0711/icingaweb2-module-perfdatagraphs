@@ -10,7 +10,7 @@ class PerfdataSeries implements JsonSerializable
     protected string $name;
 
      /** @var iterable The values for this series */
-    protected iterable $values;
+    protected iterable $values = [];
 
     /**
      * @param string $name
@@ -35,5 +35,18 @@ class PerfdataSeries implements JsonSerializable
         }
 
         return $d;
+    }
+
+    public function isValid(): bool
+    {
+        if (empty($this->name)) {
+            return false;
+        }
+
+        if (count($this->values) === 0) {
+            return false;
+        }
+
+        return true;
     }
 }

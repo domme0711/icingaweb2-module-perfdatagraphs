@@ -19,10 +19,10 @@ class PerfdataSet implements JsonSerializable
     protected string $stroke;
 
     /** @var iterable The timstamps for this dataset */
-    protected iterable $timestamps;
+    protected iterable $timestamps = [];
 
     /** @var array List of PerfdataSeries for this dataset */
-    protected array $series;
+    protected array $series = [];
 
     /**
      * @param string $title
@@ -62,6 +62,29 @@ class PerfdataSet implements JsonSerializable
             $d['series'] = $this->series;
         }
         return $d;
+    }
+
+    public function isValid(): bool
+    {
+        if (empty($this->title)) {
+            return false;
+        }
+
+        if (count($this->timestamps) === 0) {
+            return false;
+        }
+
+        if (count($this->series) === 0) {
+            return false;
+        }
+
+        foreach ($this->series as $s) {
+            if (!$s->isValid()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getTitle(): string
