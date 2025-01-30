@@ -29,6 +29,8 @@ final class PerfdataResponseTest extends TestCase
         $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
+        $this->assertFalse($pfr->isValid());
+
         $this->assertEquals($expected, $actual);
     }
 
@@ -50,6 +52,8 @@ final class PerfdataResponseTest extends TestCase
 
         $expected = '{"errors":[],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
+
+        $this->assertFalse($pfr->isValid());
 
         $this->assertEquals($expected, $actual);
     }
@@ -81,6 +85,26 @@ final class PerfdataResponseTest extends TestCase
         $expected = '{"errors":[],"data":[{"title":"myset","unit":"load","fill":"rgba(1, 1, 1, 1)","stroke":"rgba(2, 2, 2, 2)","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
+        $this->assertFalse($pfr->isValid());
+
         $this->assertEquals($expected, $actual);
+    }
+
+    public function test_perfdata_isvalid()
+    {
+        $pfr = new PerfdataResponse();
+
+        $ds = new PerfdataSet('myset', 'theunit');
+        $ds->setTimestamps([1,2]);
+
+        $s1 = new PerfdataSeries('foo', [1,2]);
+        $s2 = new PerfdataSeries('bar', [3,4]);
+
+        $ds->addSeries($s1);
+        $ds->addSeries($s2);
+
+        $pfr->addDataset($ds);
+
+        $this->assertTrue($pfr->isValid());
     }
 }

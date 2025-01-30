@@ -4,6 +4,9 @@ namespace Icinga\Module\Perfdatagraphs\Model;
 
 use JsonSerializable;
 
+/**
+ * PerfdataSeries represents a single series (y-axis) on the chart.
+ */
 class PerfdataSeries implements JsonSerializable
 {
      /** @var string The name for this series */
@@ -37,6 +40,9 @@ class PerfdataSeries implements JsonSerializable
         return $d;
     }
 
+    /**
+     * isValid checks if this series contains valid data
+     */
     public function isValid(): bool
     {
         if (empty($this->name)) {

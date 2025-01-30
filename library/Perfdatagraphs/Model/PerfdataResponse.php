@@ -4,17 +4,28 @@ namespace Icinga\Module\Perfdatagraphs\Model;
 
 use JsonSerializable;
 
+/**
+ * PerfdataResponse is what the PerfdataSourceHook returns
+ * and what we pass to the module.js
+ */
 class PerfdataResponse implements JsonSerializable
 {
     protected array $data = [];
 
     protected array $errors = [];
 
+    /**
+     * addError adds an error message to this object.
+     * @param string $e error message to append
+     */
     public function addError(string $e): void
     {
         $this->errors[] = $e;
     }
 
+    /**
+     * hasErrors checks if this response has any errors.
+     */
     public function hasErrors(): bool
     {
         if (count($this->errors) > 0) {
@@ -23,6 +34,9 @@ class PerfdataResponse implements JsonSerializable
         return false;
     }
 
+    /**
+     * isValid checks if this response contains valid data
+     */
     public function isValid(): bool
     {
         if (count($this->data) === 0) {
@@ -38,6 +52,10 @@ class PerfdataResponse implements JsonSerializable
         return true;
     }
 
+    /**
+     * addDataset adds a new PerfdataSet (which respresents a single chart in the frontend).
+     * @param PerfdataSet $ds the dataset to add
+     */
     public function addDataset(PerfdataSet $ds): void
     {
         $this->data[] = $ds;

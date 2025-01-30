@@ -4,6 +4,10 @@ namespace Icinga\Module\Perfdatagraphs\Model;
 
 use JsonSerializable;
 
+/**
+ * PerfdataSet represents a single chart in the frontend.
+ * It in turn can contain several series that are drawn on the chart.
+ */
 class PerfdataSet implements JsonSerializable
 {
      /** @var string The title of this dataset */
@@ -64,6 +68,9 @@ class PerfdataSet implements JsonSerializable
         return $d;
     }
 
+    /**
+     * isValid checks if this dataset contains valid data
+     */
     public function isValid(): bool
     {
         if (empty($this->title)) {
@@ -92,26 +99,46 @@ class PerfdataSet implements JsonSerializable
         return $this->title;
     }
 
+    /**
+     * setUnit sets the unit for this data series.
+     * @param string $u
+     */
     public function setUnit(string $u): void
     {
         $this->unit = $u;
     }
 
+    /**
+     * setFill sets the fill color of the data series.
+     * @param string $s
+     */
     public function setFill(string $f): void
     {
         $this->fill = $f;
     }
 
+    /**
+     * setStroke sets the stroke color of the data series.
+     * @param string $s
+     */
     public function setStroke(string $s): void
     {
         $this->stroke = $s;
     }
 
+    /**
+     * addSeries adds a new data series to this dataset.
+     * @param PerfdataSeries $s
+     */
     public function addSeries(PerfdataSeries $s): void
     {
         $this->series[] = $s;
     }
 
+    /**
+     * setTimestamps sets the timestamps for this dataset.
+     * @param iterable $ts
+     */
     public function setTimestamps(iterable $ts): void
     {
         $this->timestamps = $ts;

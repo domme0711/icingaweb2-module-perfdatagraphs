@@ -108,7 +108,7 @@
          * Can be removed once PHP 8.0 is ancient history.
          */
         ensureArray(obj) {
-            if (typeof obj === "object" && !Array.isArray(obj)) {
+            if (typeof obj === 'object' && !Array.isArray(obj)) {
                 return Object.values(obj);
             }
 
