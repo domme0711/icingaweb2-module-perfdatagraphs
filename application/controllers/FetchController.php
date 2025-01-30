@@ -4,7 +4,6 @@ namespace Icinga\Module\Perfdatagraphs\Controllers;
 
 use Icinga\Module\Perfdatagraphs\Common\PerfdataSource;
 
-use Icinga\Module\Icingadb\Common\Database;
 use Icinga\Util\Json;
 
 use ipl\Web\Compat\CompatController;
@@ -14,11 +13,6 @@ use ipl\Web\Compat\CompatController;
  */
 class FetchController extends CompatController
 {
-    /**
-     * @var Database
-     */
-    use Database;
-
     /**
      * @var PerfdataSource
      */
