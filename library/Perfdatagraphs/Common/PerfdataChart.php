@@ -27,7 +27,7 @@ trait PerfdataChart
     public function createChart(Model $object): ValidHtml
     {
         // Generic container for all elements we want to create here.
-        $html = HtmlElement::create('section', ['class' => 'perfdata-charts']);
+        $html = HtmlElement::create('div', ['class' => 'perfdata-charts']);
 
         // Check if charts are disabled for this object, if so we just return.
         $cvh = new CustomVarsHelper();
