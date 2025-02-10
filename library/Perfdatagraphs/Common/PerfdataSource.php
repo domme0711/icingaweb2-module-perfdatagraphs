@@ -2,6 +2,7 @@
 
 namespace Icinga\Module\Perfdatagraphs\Common;
 
+use Icinga\Module\Perfdatagraphs\Model\PerfdataRequest;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 use Icinga\Module\Perfdatagraphs\Common\ModuleConfig;
 
@@ -40,44 +41,17 @@ trait PerfdataSource
             return $response;
         }
 
+        // Load the custom variables for the metrics to include and exclude
         $customvars = $cvh->getPerfdataGraphsConfigForObject($object);
 
-        // List that contains the metrics we want from the backend.
-        // TODO: Maybe move the filtering logic to another method for simpler testing,
-        // for now it's OK since I don't know if this logic stays as is.
-        $metrics = [];
-
-        // First let's load the list of all performance data that is available for this object
-        $objectPerfData = IcingaPerfdataSet::fromString($object->state->normalized_performance_data)->asArray();
-
-        if (isset($objectPerfData)) {
-            $metrics = array_map(function ($item) {
-                return $item->getLabel();
-            }, $objectPerfData);
-        }
-
-        // Then reduce it to only include the ones that are requested via the custom variable
+        $metricsToInclude = [];
         if ($customvars[$cvh::CUSTOM_VAR_CONFIG_INCLUDE] ?? false) {
-            // Resolve all wildcards in the list and leave only the matching metrics.
             $metricsToInclude = $customvars[$cvh::CUSTOM_VAR_CONFIG_INCLUDE];
-            $metricsIncluded = array_filter($metrics, function ($metric) use ($metricsToInclude) {
-                foreach ($metricsToInclude as $pattern) {
-                    if (fnmatch($pattern, $metric)) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-
-            $metrics = $metricsIncluded;
         }
 
-        // Finally remove all that are explicitly to be removed
+        $metricsToExclude = [];
         if ($customvars[$cvh::CUSTOM_VAR_CONFIG_EXCLUDE] ?? false) {
             $metricsToExclude = $customvars[$cvh::CUSTOM_VAR_CONFIG_EXCLUDE];
-            $metricsExcluded = array_diff($metrics, $metricsToExclude);
-
-            $metrics = $metricsExcluded;
         }
 
         // If the object wants the data from a custom backend
@@ -95,9 +69,12 @@ trait PerfdataSource
             return $response;
         }
 
+        // Create a new PerfdataRequest with the given parameters and custom variables
+        $request = new PerfdataRequest($host, $service, $checkcommand, $duration, $metricsToInclude, $metricsToExclude);
+
         // Try to fetch the data with the hook.
         try {
-            $response = $hook->fetchData($host, $service, $checkcommand, $duration, $metrics);
+            $response = $hook->fetchData($request);
         } catch (Exception $e) {
             $response->addError(sprintf('Failed to call PerfdataSource hook: %s', $e->getMessage()));
             return $response;
