@@ -18,6 +18,7 @@
         plots = new Map();
         // Where we store data inbetween autorefresh
         currentSelect = null;
+        currentCursor = null;
         currentSeriesShow = {1: true};
         duration = 'PT12H';
 
@@ -54,6 +55,7 @@
                 // _this.currentSelect = {min: 0, max: 0};
                 _this.currentSelect = null;
                 _this.currentSeriesShow = {1: true};
+                _this.currentCursor = null;
                 _this.duration = 'PT12H';
             }
 
@@ -324,6 +326,13 @@
                                 }
                             }
                         ],
+                        setCursor: [
+                            (u) => {
+                                // We need to store the current cursor
+                                // to refresh it when the autorefresh hits.
+                                this.currentCursor = u.cursor;
+                            }
+                        ],
                         setSeries: [
                             (u, sidx) => {
                                 // When series are toggled, we store the current option
@@ -402,9 +411,13 @@
                     // Add the data to the chart
                     u.setData(d);
 
+                    // If a selection is stored we restore it.
                     if (this.currentSelect !== null) {
-                        // If a selection is stored we restore it.
                         u.setScale('x', this.currentSelect);
+                    }
+                    // If a cursor is stored we restore it.
+                    if (this.currentCursor !== null) {
+                        u.setCursor(this.currentCursor);
                     }
 
                     // Add the chart to the map which we use for the resize observer
