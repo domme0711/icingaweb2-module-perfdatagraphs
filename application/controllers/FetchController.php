@@ -2,6 +2,7 @@
 
 namespace Icinga\Module\Perfdatagraphs\Controllers;
 
+use Icinga\Module\Perfdatagraphs\Common\ModuleConfig;
 use Icinga\Module\Perfdatagraphs\Common\PerfdataSource;
 
 use Icinga\Util\Json;
@@ -41,12 +42,15 @@ class FetchController extends CompatController
         // Use gzip encoding to reduce the amount of transfered data
         $body = gzencode(Json::sanitize($perfdata));
 
-        // Return the everything as a JSON reposonse.
+        // Load the module's configuration.
+        $config = ModuleConfig::getConfig();
+
+        // Return the everything as a JSON response.
         $response = $this->getResponse();
         $response
             ->setHeader('Content-Type', 'application/json')
             // We could maybe do a more dynamic max-age, based on the duration for example
-            ->setHeader('Cache-Control', sprintf('public, max-age=%s', 360), true)
+            ->setHeader('Cache-Control', sprintf('public, max-age=%s', $config['cache_lifetime']), true)
             ->setHeader('Content-Encoding', 'gzip')
             ->setHeader('Content-Length', strlen($body))
             ->appendBody($body)

@@ -35,6 +35,11 @@ class PerfdataGraphsConfigForm extends ConfigForm
                 'class' => 'autosubmit',
             ]
         );
+
+        $this->addElement('number', 'perfdatagraphs_cache_lifetime', [
+            'description' => t('Cache for the data from the backend (default: 360)'),
+            'label' => 'Cache lifetime in seconds'
+        ]);
     }
 
     /**
