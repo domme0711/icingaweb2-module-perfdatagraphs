@@ -30,7 +30,7 @@ trait PerfdataChart
     public function createChart(string $hostName, string $serviceName, string $checkCommandName, bool $isHostCheck): ValidHtml
     {
         // Generic container for all elements we want to create here.
-        $html = HtmlElement::create('div', ['class' => 'perfdata-charts']);
+        $main = HtmlElement::create('div', ['class' => 'perfdata-charts']);
 
         // Ok so hear me out, since we are using a <canvas> to render the charts
         // we cannot use CSS classes to style the content of the chart.
@@ -42,8 +42,16 @@ trait PerfdataChart
             $d = HtmlElement::create('div', [
                 'class' => $class,
             ]);
-            $html->add($d);
+            $main->add($d);
         }
+
+        // Where we store all elements for the charts.
+        $charts = HtmlElement::create('div', [
+            'class' => 'perfdata-charts-container collapsible',
+            // Note: We could have a configuration option to change the
+            // "always collapsed" behaviour
+            'data-visible-height' => 0,
+        ]);
 
         // Element in which the charts will get rendered.
         // We use attributes on this elements to transport data
@@ -51,7 +59,6 @@ trait PerfdataChart
         $chart = HtmlElement::create('div', [
             'id' => sprintf('%s-%s-%s', $hostName, $serviceName, $checkCommandName),
             'class' => 'line-chart',
-            // 'data-visible-height' => 300,
             'data-host' => $hostName,
             'data-ishostcheck' => $isHostCheck ? 'true': 'false',
             'data-service' => $serviceName,
@@ -71,11 +78,14 @@ trait PerfdataChart
         $header = Html::tag('h2', $this->translate('Performance Data Graph'));
         $header->add(new Icon('spinner', ['class' => 'spinner']));
 
-        $html->add($header);
-        $html->add((new QuickActions($config['default_timerange'])));
-        $html->add($error);
-        $html->add($chart);
+        $main->add($header);
+        $main->add($error);
 
-        return $html;
+        $charts->add((new QuickActions($config['default_timerange'])));
+        $charts->add($chart);
+
+        $main->add($charts);
+
+        return $main;
     }
 }
