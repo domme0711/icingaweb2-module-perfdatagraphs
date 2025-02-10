@@ -5,9 +5,12 @@ namespace Icinga\Module\Perfdatagraphs\Common;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataRequest;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 use Icinga\Module\Perfdatagraphs\Common\ModuleConfig;
+use Icinga\Module\Perfdatagraphs\ProvidedHook\Icingadb\IcingadbSupport;
 
-use Icinga\Module\Icingadb\Util\PerfDataSet as IcingaPerfdataSet;
+use Icinga\Module\Perfdatagraphs\Icingadb\CustomVarsHelper as IcinaDBCVH;
+use Icinga\Module\Perfdatagraphs\Ido\CustomVarsHelper as IdoCVH;
 
+use Icinga\Application\Modules\Module;
 use Icinga\Application\Logger;
 
 use Exception;
@@ -32,8 +35,13 @@ trait PerfdataSource
     {
         $response = new PerfdataResponse();
 
+        if (Module::exists('icingadb') && IcingadbSupport::useIcingaDbAsBackend()) {
+            $cvh = new IcinaDBCVH();
+        } else {
+            $cvh = new IdoCVH();
+        }
+
         // Get the object so that we can get its custom variables.
-        $cvh = new CustomVarsHelper();
         $object = $cvh->getObjectFromString($host, $service);
 
         // If there's no object we can just stop here.
