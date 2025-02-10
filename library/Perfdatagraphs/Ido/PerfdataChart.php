@@ -1,13 +1,13 @@
 <?php
 
-namespace Icinga\Module\Perfdatagraphs\Common;
+namespace Icinga\Module\Perfdatagraphs\Ido;
 
 use Icinga\Module\Perfdatagraphs\Widget\QuickActions;
 
-use Icinga\Module\Icingadb\Model\Host;
-use Icinga\Module\Icingadb\Model\Service;
+use Icinga\Module\Monitoring\Object\Host;
+use Icinga\Module\Monitoring\Object\MonitoredObject;
+use Icinga\Module\Monitoring\Object\Service;
 
-use ipl\Orm\Model;
 use ipl\Html\HtmlElement;
 use ipl\Html\Html;
 use ipl\Html\ValidHtml;
@@ -24,7 +24,7 @@ trait PerfdataChart
     /**
      * createChart creates HTMLElements that are used to render charts in.
      */
-    public function createChart(Model $object): ValidHtml
+    public function createChart(MonitoredObject $object): ValidHtml
     {
         // Generic container for all elements we want to create here.
         $html = HtmlElement::create('div', ['class' => 'perfdata-charts']);
@@ -36,22 +36,23 @@ trait PerfdataChart
             return $html;
         }
 
-        // Check if there are no perfdata for this object.
-        if (empty($object->state->performance_data)) {
+        if ($object instanceof Host) {
+            $serviceName = $object->host_check_command;
+            $hostName = $object->getName();
+            $checkCommandName = $object->host_check_command;
+            $perfdata = $object->host_perfdata;
+        } elseif ($object instanceof Service) {
+            $serviceName = $object->getName();
+            $hostName = $object->getHost()->getName();
+            $checkCommandName = $object->check_command;
+            $perfdata = $object->service_perfdata;
+        } else {
+            // Unecessary but just to be safe.
             return $html;
         }
 
-        // Adjust the attributes depending on the type of object.
-        if ($object instanceof Host) {
-            $serviceName = $object->checkcommand_name ?? '';
-            $hostName = $object->name ?? '';
-            $checkCommandName = $object->checkcommand_name ?? '';
-        } elseif ($object instanceof Service) {
-            $serviceName = $object->name ?? '';
-            $hostName = $object->host->name ?? '';
-            $checkCommandName = $object->checkcommand_name ?? '';
-        } else {
-            // Unecessary but just to be safe.
+        // Check if there are no perfdata for this object.
+        if (empty($perfdata)) {
             return $html;
         }
 

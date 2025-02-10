@@ -2,7 +2,7 @@
 
 namespace Icinga\Module\Perfdatagraphs\ProvidedHook\Icingadb;
 
-use Icinga\Module\Perfdatagraphs\Common\PerfdataChart;
+use Icinga\Module\Perfdatagraphs\Icingadb\PerfdataChart;
 
 use Icinga\Module\Icingadb\Hook\HostDetailExtensionHook;
 use Icinga\Module\Icingadb\Model\Host;

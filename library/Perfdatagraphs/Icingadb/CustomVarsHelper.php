@@ -1,8 +1,9 @@
 <?php
 
-namespace Icinga\Module\Perfdatagraphs\Common;
+namespace Icinga\Module\Perfdatagraphs\Icingadb;
 
 use Icinga\Exception\NotFoundError;
+
 use Icinga\Module\Icingadb\Common\Auth;
 use Icinga\Module\Icingadb\Common\Database;
 use Icinga\Module\Icingadb\Model\Host;

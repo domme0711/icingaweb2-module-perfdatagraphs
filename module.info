@@ -2,7 +2,7 @@ Name: Performance Data Graphs
 Version: 0.1.0
 Requires:
   Libraries: icinga-php-library (>=0.13.0)
-  Modules: icingadb (>=1.0.0)
+  Modules: icingadb (>=1.0.0), monitoring (>= 2.12.0)
 Description: Icinga Web Module for Performance Data Graphs
  This module enables graphs on the Host and Service Detail View for
  the repsective performance data. The data is fetched by a "backend module",
