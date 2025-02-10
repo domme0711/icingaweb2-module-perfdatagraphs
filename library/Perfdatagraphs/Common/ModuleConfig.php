@@ -64,4 +64,31 @@ class ModuleConfig
 
         return $default;
     }
+
+    /**
+     * getConfig loads all configuration options with their defaults.
+     *
+     * @return array
+     */
+    public static function getConfig(Config $moduleConfig = null): array
+    {
+        $default = [
+            'cache_lifetime' => 360,
+        ];
+
+        // Try to load the configuration
+        if ($moduleConfig === null) {
+            try {
+                $moduleConfig = Config::module('perfdatagraphs');
+            } catch (Exception $e) {
+                Logger::error('Failed to load Perfdata Graphs module configuration: %s', $e);
+                return $default;
+            }
+        }
+
+        $config = [];
+        $config['cache_lifetime'] = (int) $moduleConfig->get('perfdatagraphs', 'cache_lifetime', $default['cache_lifetime']);
+
+        return $config;
+    }
 }
