@@ -74,6 +74,7 @@ class ModuleConfig
     {
         $default = [
             'cache_lifetime' => 360,
+            'default_timerange' => 'PT12H',
         ];
 
         // Try to load the configuration
@@ -88,6 +89,7 @@ class ModuleConfig
 
         $config = [];
         $config['cache_lifetime'] = (int) $moduleConfig->get('perfdatagraphs', 'cache_lifetime', $default['cache_lifetime']);
+        $config['default_timerange'] = $moduleConfig->get('perfdatagraphs', 'default_timerange', $default['default_timerange']);
 
         return $config;
     }
