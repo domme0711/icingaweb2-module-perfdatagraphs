@@ -11,8 +11,8 @@ final class QuickActionsTest extends TestCase
     public function test_assemble()
     {
 
-        $qa = new QuickActions();
+        $qa = new QuickActions('FOOBAR');
 
-        $this->assertStringContainsString("data-duration=", $qa->render());
+        $this->assertStringContainsString('data-duration="FOOBAR"', $qa->render());
     }
 }

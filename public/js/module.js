@@ -20,7 +20,9 @@
         currentSelect = null;
         currentCursor = null;
         currentSeriesShow = {1: true};
-        duration = 'PT12H';
+        // Where we store the variable selected and the constant timerange
+        duration = '';
+        defaultDuration = '';
 
         constructor(icinga)
         {
@@ -49,6 +51,13 @@
         {
             let _this = event.data.self;
 
+            // This elements contains the configured default timerange from the
+            // module's configuration.
+            const elem = document.getElementById('perfdatagraphs-default-timerange');
+            const defaultduration = elem.getAttribute('data-duration');
+            this.duration = defaultduration;
+            this.defaultDuration = defaultduration;
+
             if (!isAutorefresh) {
                 // Reset the selection and set the duration when it's
                 // an autorefresh and new data is being loaded.
@@ -56,7 +65,7 @@
                 _this.currentSelect = null;
                 _this.currentSeriesShow = {1: true};
                 _this.currentCursor = null;
-                _this.duration = 'PT12H';
+                _this.duration = this.defaultDuration;
             }
 
             // Now we fetch and render

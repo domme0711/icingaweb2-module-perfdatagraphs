@@ -25,11 +25,14 @@ class FetchController extends CompatController
      */
     public function indexAction()
     {
+        // Load the module's configuration.
+        $config = ModuleConfig::getConfig();
+
         // Retrieve the URL parameters.
         $host = $this->params->getRequired('host');
         $service = $this->params->getRequired('service');
         $checkcommand = $this->params->getRequired('checkcommand');
-        $duration = $this->params->get('duration', 'PT12H');
+        $duration = $this->params->get('duration', $config['default_timerange']);
 
         // Fetch the perfdata for a given object via the hook.
         $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration);
@@ -41,9 +44,6 @@ class FetchController extends CompatController
 
         // Use gzip encoding to reduce the amount of transfered data
         $body = gzencode(Json::sanitize($perfdata));
-
-        // Load the module's configuration.
-        $config = ModuleConfig::getConfig();
 
         // Return the everything as a JSON response.
         $response = $this->getResponse();

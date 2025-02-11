@@ -20,6 +20,16 @@ class QuickActions extends BaseHtmlElement
 
     protected $defaultAttributes = ['class' => 'quick-actions'];
 
+    protected $defaultCurrentRange;
+
+    /**
+     * @param string $defaultCurrentRange Value for the "Current" time range button
+     */
+    public function __construct(string $defaultCurrentRange = 'PT12H')
+    {
+        $this->defaultCurrentRange = $defaultCurrentRange;
+    }
+
     /**
      * Implement the BaseHtmlElement assemble method.
      * Hint: We do not use a loop to facilitate translation.
@@ -30,9 +40,10 @@ class QuickActions extends BaseHtmlElement
             'a',
             [
                 'href' => '#',
-                'data-duration' => 'PT12H',
+                'id' => 'perfdatagraphs-default-timerange',
+                'data-duration' => $this->defaultCurrentRange,
                 'class' => 'action-link',
-                'title' => $this->translate('Show performance data for the last 12 hours'),
+                'title' => $this->translate('Show the current performance data'),
             ],
             [ new Icon('calendar'), $this->translate('Current') ]
         );

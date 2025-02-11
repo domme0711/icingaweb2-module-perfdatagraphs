@@ -63,12 +63,14 @@ trait PerfdataChart
             'data-message-error' => $this->translate('Error while fetching performance data'),
         ]);
 
+        $config = ModuleConfig::getConfig();
+
         // Add a headline and all other elements to our element.
         $header = Html::tag('h2', $this->translate('Performance Data Graph'));
         $header->add(new Icon('spinner', ['class' => 'spinner']));
 
         $html->add($header);
-        $html->add((new QuickActions()));
+        $html->add((new QuickActions($config['default_timerange'])));
         $html->add($error);
         $html->add($chart);
 
