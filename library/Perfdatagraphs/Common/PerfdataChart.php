@@ -1,12 +1,8 @@
 <?php
 
-namespace Icinga\Module\Perfdatagraphs\Ido;
+namespace Icinga\Module\Perfdatagraphs\Common;
 
 use Icinga\Module\Perfdatagraphs\Widget\QuickActions;
-
-use Icinga\Module\Monitoring\Object\Host;
-use Icinga\Module\Monitoring\Object\MonitoredObject;
-use Icinga\Module\Monitoring\Object\Service;
 
 use ipl\Html\HtmlElement;
 use ipl\Html\Html;
@@ -23,38 +19,17 @@ trait PerfdataChart
 
     /**
      * createChart creates HTMLElements that are used to render charts in.
+     *
+     * @param string $host Name of the host
+     * @param string $service Name of the service
+     * @param string $checkcommand Name of the checkcommand
+     *
+     * @return ValidHtml
      */
-    public function createChart(MonitoredObject $object): ValidHtml
+    public function createChart(string $hostName, string $serviceName, string $checkCommandName): ValidHtml
     {
         // Generic container for all elements we want to create here.
         $html = HtmlElement::create('div', ['class' => 'perfdata-charts']);
-
-        // Check if charts are disabled for this object, if so we just return.
-        $cvh = new CustomVarsHelper();
-        $customvars = $cvh->getPerfdataGraphsConfigForObject($object);
-        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_DISABLE] ?? false) {
-            return $html;
-        }
-
-        if ($object instanceof Host) {
-            $serviceName = $object->host_check_command;
-            $hostName = $object->getName();
-            $checkCommandName = $object->host_check_command;
-            $perfdata = $object->host_perfdata;
-        } elseif ($object instanceof Service) {
-            $serviceName = $object->getName();
-            $hostName = $object->getHost()->getName();
-            $checkCommandName = $object->check_command;
-            $perfdata = $object->service_perfdata;
-        } else {
-            // Unecessary but just to be safe.
-            return $html;
-        }
-
-        // Check if there are no perfdata for this object.
-        if (empty($perfdata)) {
-            return $html;
-        }
 
         // Ok so hear me out, since we are using a <canvas> to render the charts
         // we cannot use CSS classes to style the content of the chart.
