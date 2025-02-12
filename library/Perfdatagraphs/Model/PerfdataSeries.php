@@ -25,6 +25,11 @@ class PerfdataSeries implements JsonSerializable
         $this->values = $values;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function jsonSerialize(): mixed
     {
         $d = [];
