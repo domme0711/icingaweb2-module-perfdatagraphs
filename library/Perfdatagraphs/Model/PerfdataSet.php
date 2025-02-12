@@ -63,7 +63,7 @@ class PerfdataSet implements JsonSerializable
         }
 
         if (isset($this->series)) {
-            $d['series'] = $this->series;
+            $d['series'] = array_values($this->series);
         }
         return $d;
     }
@@ -132,7 +132,7 @@ class PerfdataSet implements JsonSerializable
      */
     public function addSeries(PerfdataSeries $s): void
     {
-        $this->series[] = $s;
+        $this->series[$s->getName()] = $s;
     }
 
     /**

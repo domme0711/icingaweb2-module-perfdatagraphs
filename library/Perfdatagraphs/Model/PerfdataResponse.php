@@ -35,14 +35,18 @@ class PerfdataResponse implements JsonSerializable
     }
 
     /**
+     * isValid checks if this response contains data
+     */
+    public function isEmpty(): bool
+    {
+        return count($this->data) === 0;
+    }
+
+    /**
      * isValid checks if this response contains valid data
      */
     public function isValid(): bool
     {
-        if (count($this->data) === 0) {
-            return false;
-        }
-
         foreach ($this->data as $dataset) {
             if (!$dataset->isValid()) {
                 return false;
@@ -53,12 +57,25 @@ class PerfdataResponse implements JsonSerializable
     }
 
     /**
+     * getDataset returns a dataset by its name.
+     *
+     * @param string $title the dataset to return
+     * @return PerfdataSet
+     */
+    public function getDataset(string $title): ?PerfdataSet
+    {
+        if (array_key_exists($title, $this->data)) {
+            return $this->data[$title];
+        }
+    }
+
+    /**
      * addDataset adds a new PerfdataSet (which respresents a single chart in the frontend).
      * @param PerfdataSet $ds the dataset to add
      */
     public function addDataset(PerfdataSet $ds): void
     {
-        $this->data[] = $ds;
+        $this->data[$ds->getTitle()] = $ds;
     }
 
     public function jsonSerialize(): mixed
@@ -69,7 +86,7 @@ class PerfdataResponse implements JsonSerializable
             $d['errors'] = $this->errors;
         }
         if (isset($this->data)) {
-            $d['data'] = $this->data;
+            $d['data'] = array_values($this->data);
         }
 
         return $d;

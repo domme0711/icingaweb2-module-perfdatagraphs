@@ -14,6 +14,8 @@ final class PerfdataResponseTest extends TestCase
     {
         $pfr = new PerfdataResponse();
 
+        $this->assertTrue($pfr->isEmpty());
+
         $ds = new PerfdataSet('myset', 'theunit');
 
         $s1 = new PerfdataSeries('foo', [1,2]);
@@ -24,12 +26,15 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->addDataset($ds);
 
+        $this->assertEquals($ds, $pfr->getDataset('myset'));
+
         $pfr->addError('WRONG!');
 
         $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertFalse($pfr->isValid());
+        $this->assertFalse($pfr->isEmpty());
 
         $this->assertEquals($expected, $actual);
     }
