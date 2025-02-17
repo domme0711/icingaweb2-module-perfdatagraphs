@@ -54,12 +54,11 @@ class PerfdataSeries implements JsonSerializable
             return true;
         }
 
-        $nonNullValues = array_filter($this->values, function ($v) {
-            return $v !== null;
-        });
-
-        if (count($nonNullValues) !== 0) {
-            return false;
+        // Keeping it simply since values are an iterable (e.g. SplFixedArray)
+        foreach ($this->values as $v) {
+            if (!is_null($v)) {
+                return false;
+            }
         }
 
         return true;

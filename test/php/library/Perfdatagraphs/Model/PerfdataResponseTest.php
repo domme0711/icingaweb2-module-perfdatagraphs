@@ -6,6 +6,8 @@ use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataSet;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataSeries;
 
+use SplFixedArray;
+
 use PHPUnit\Framework\TestCase;
 
 final class PerfdataResponseTest extends TestCase
@@ -23,6 +25,15 @@ final class PerfdataResponseTest extends TestCase
 
         $actual = new PerfdataSeries('ps', [null, null]);
         $this->assertTrue($actual->isEmpty());
+
+        $values = new SplFixedArray(1);
+        $actual = new PerfdataSeries('ps', $values);
+        $this->assertTrue($actual->isEmpty());
+
+        $values = new SplFixedArray(1);
+        $values[0] = 10;
+        $actual = new PerfdataSeries('ps', $values);
+        $this->assertFalse($actual->isEmpty());
     }
 
     public function test_perfdataset_isEmpty()
@@ -38,6 +49,11 @@ final class PerfdataResponseTest extends TestCase
         $actual = new PerfdataSet('myset', 'theunit');
         $s1 = new PerfdataSeries('foo', [null, null]);
         $actual->addSeries($s1);
+        $this->assertTrue($actual->isEmpty());
+
+        $values = new SplFixedArray(1);
+        $actual = new PerfdataSet('myset', 'theunit');
+        $s1 = new PerfdataSeries('ps', $values);
         $this->assertTrue($actual->isEmpty());
     }
 
