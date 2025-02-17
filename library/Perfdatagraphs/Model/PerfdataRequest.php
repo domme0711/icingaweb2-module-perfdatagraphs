@@ -11,6 +11,7 @@ class PerfdataRequest
     protected string $serviceName;
     protected string $checkCommand;
     protected string $duration;
+    protected bool $isHostCheck;
     protected array $includeMetrics = [];
     protected array $excludeMetrics = [];
 
@@ -27,6 +28,7 @@ class PerfdataRequest
      * @param string $serviceName service name for the performance data query
      * @param string $checkCommand checkcommand name for the performance data query
      * @param string $duration for which to fetch the data for in PHP's DateInterval format (e.g. PT12H, P1D, P1Y)
+     * @param bool $isHostCheck is this a Host or Service Check that is requested. Backends queries might differ for these.
      * @param array $includeMetrics a list of metrics that are requested, if not set all available metrics should be returned
      * @param array $excludeMetrics a list of metrics should be excluded from the results, if not set no metrics should be excluded
      */
@@ -35,6 +37,7 @@ class PerfdataRequest
         string $serviceName,
         string $checkCommand,
         string $duration,
+        bool $isHostCheck,
         array $includeMetrics = [],
         array $excludeMetrics = []
     ) {
@@ -42,6 +45,7 @@ class PerfdataRequest
         $this->serviceName = $serviceName;
         $this->checkCommand = $checkCommand;
         $this->duration = $duration;
+        $this->isHostCheck = $isHostCheck;
         $this->includeMetrics = $includeMetrics;
         $this->excludeMetrics = $excludeMetrics;
     }
@@ -64,6 +68,11 @@ class PerfdataRequest
     public function getDuration(): string
     {
         return $this->duration;
+    }
+
+    public function isHostCheck(): bool
+    {
+        return $this->isHostCheck;
     }
 
     public function getIncludeMetrics(): array

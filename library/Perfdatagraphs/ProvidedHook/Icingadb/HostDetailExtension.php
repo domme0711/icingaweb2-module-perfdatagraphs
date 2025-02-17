@@ -35,8 +35,10 @@ class HostDetailExtension extends HostDetailExtensionHook
             return HtmlString::create('');
         }
 
+        $isHostCheck = true;
+
         // Get the configured element for the host.
-        $chart = $this->createChart($hostName, $serviceName, $checkCommandName);
+        $chart = $this->createChart($hostName, $serviceName, $checkCommandName, $isHostCheck);
 
         if (empty($chart)) {
             // Probably unecessary but just to be safe.
