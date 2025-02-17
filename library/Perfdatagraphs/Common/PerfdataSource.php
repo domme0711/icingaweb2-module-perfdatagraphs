@@ -28,10 +28,11 @@ trait PerfdataSource
      * @param string $service Name of the service
      * @param string $checkcommand Name of the checkcommand
      * @param string $duration Duration for which to fetch the data
+     * @param bool $isHostCheck Is this a Host check
      *
      * @return PerfdataResponse
      */
-    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration): PerfdataResponse
+    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration, $isHostCheck): PerfdataResponse
     {
         $response = new PerfdataResponse();
 
@@ -78,7 +79,7 @@ trait PerfdataSource
         }
 
         // Create a new PerfdataRequest with the given parameters and custom variables
-        $request = new PerfdataRequest($host, $service, $checkcommand, $duration, $metricsToInclude, $metricsToExclude);
+        $request = new PerfdataRequest($host, $service, $checkcommand, $duration, $isHostCheck, $metricsToInclude, $metricsToExclude);
 
         // Try to fetch the data with the hook.
         try {

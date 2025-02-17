@@ -32,10 +32,14 @@ class FetchController extends CompatController
         $host = $this->params->getRequired('host');
         $service = $this->params->getRequired('service');
         $checkcommand = $this->params->getRequired('checkcommand');
+        $isHostCheck = $this->params->getRequired('ishostcheck');
         $duration = $this->params->get('duration', $config['default_timerange']);
 
+        // Transform into boolean
+        $isHostCheck = $isHostCheck === 'true' ? true : false;
+
         // Fetch the perfdata for a given object via the hook.
-        $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration);
+        $perfdata = $this->fetchDataViaHook($host, $service, $checkcommand, $duration, $isHostCheck);
 
         if (! $perfdata->isValid()) {
             // If the data is not valid, return an error

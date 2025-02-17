@@ -23,10 +23,11 @@ trait PerfdataChart
      * @param string $host Name of the host
      * @param string $service Name of the service
      * @param string $checkcommand Name of the checkcommand
+     * @param bool $isHostCheck Is this a Host check
      *
      * @return ValidHtml
      */
-    public function createChart(string $hostName, string $serviceName, string $checkCommandName): ValidHtml
+    public function createChart(string $hostName, string $serviceName, string $checkCommandName, bool $isHostCheck): ValidHtml
     {
         // Generic container for all elements we want to create here.
         $html = HtmlElement::create('div', ['class' => 'perfdata-charts']);
@@ -52,6 +53,7 @@ trait PerfdataChart
             'class' => 'line-chart',
             // 'data-visible-height' => 300,
             'data-host' => $hostName,
+            'data-ishostcheck' => $isHostCheck ? 'true': 'false',
             'data-service' => $serviceName,
             'data-checkcommand' => $checkCommandName,
         ]);

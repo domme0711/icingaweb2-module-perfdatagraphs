@@ -18,10 +18,13 @@ class DetailviewExtension extends DetailviewExtensionHook
 
     public function getHtmlForObject(MonitoredObject $object)
     {
+        $isHostCheck = false;
+
         if ($object instanceof Host) {
             $serviceName = $object->host_check_command;
             $hostName = $object->getName();
             $checkCommandName = $object->host_check_command;
+            $isHostCheck = true;
         } elseif ($object instanceof Service) {
             $serviceName = $object->getName();
             $hostName = $object->getHost()->getName();
@@ -40,7 +43,7 @@ class DetailviewExtension extends DetailviewExtensionHook
         }
 
         // Get the configured element for the host.
-        $chart = $this->createChart($hostName, $serviceName, $checkCommandName);
+        $chart = $this->createChart($hostName, $serviceName, $checkCommandName, $isHostCheck);
 
         if (empty($chart)) {
             // Probably unecessary but just to be safe.

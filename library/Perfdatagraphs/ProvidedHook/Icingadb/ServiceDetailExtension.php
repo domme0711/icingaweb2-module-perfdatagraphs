@@ -35,8 +35,10 @@ class ServiceDetailExtension extends ServiceDetailExtensionHook
             return HtmlString::create('');
         }
 
+        $isHostCheck = false;
+
         // Get the configured element for the service.
-        $chart = $this->createChart($hostName, $serviceName, $checkCommandName);
+        $chart = $this->createChart($hostName, $serviceName, $checkCommandName, $isHostCheck);
 
         if (empty($chart)) {
             // Probably unecessary but just to be safe.

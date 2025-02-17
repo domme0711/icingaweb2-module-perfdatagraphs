@@ -210,6 +210,7 @@
                     host: elem.getAttribute('data-host'),
                     service: elem.getAttribute('data-service'),
                     checkcommand: elem.getAttribute('data-checkcommand'),
+                    ishostcheck: elem.getAttribute('data-ishostcheck'),
                     duration: _this.duration,
                 }
 
