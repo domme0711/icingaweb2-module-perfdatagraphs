@@ -43,7 +43,7 @@ class PerfdataGraphsConfigForm extends ConfigForm
     {
         // TODO: Add validator
         $this->addElement('text', 'perfdatagraphs_default_timerange', [
-            'description' => t('Default time range for the "Current" button'),
+            'description' => t('Default time range for the "Current" button. Hint: too small a value may result in invalid data'),
             'label' => 'Default Time Range'
         ]);
 
