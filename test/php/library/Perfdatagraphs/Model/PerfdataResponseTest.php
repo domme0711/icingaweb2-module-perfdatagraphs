@@ -10,6 +10,37 @@ use PHPUnit\Framework\TestCase;
 
 final class PerfdataResponseTest extends TestCase
 {
+    public function test_perfdataseries_isEmpty()
+    {
+        $actual = new PerfdataSeries('ps', [1,2]);
+        $this->assertFalse($actual->isEmpty());
+
+        $actual = new PerfdataSeries('ps', [1, null]);
+        $this->assertFalse($actual->isEmpty());
+
+        $actual = new PerfdataSeries('ps', []);
+        $this->assertTrue($actual->isEmpty());
+
+        $actual = new PerfdataSeries('ps', [null, null]);
+        $this->assertTrue($actual->isEmpty());
+    }
+
+    public function test_perfdataset_isEmpty()
+    {
+        $actual = new PerfdataSet('myset', 'theunit');
+        $s1 = new PerfdataSeries('foo', [1,2]);
+        $actual->addSeries($s1);
+        $this->assertFalse($actual->isEmpty());
+
+        $actual = new PerfdataSet('myset', 'theunit');
+        $this->assertTrue($actual->isEmpty());
+
+        $actual = new PerfdataSet('myset', 'theunit');
+        $s1 = new PerfdataSeries('foo', [null, null]);
+        $actual->addSeries($s1);
+        $this->assertTrue($actual->isEmpty());
+    }
+
     public function test_perfdataresponse()
     {
         $pfr = new PerfdataResponse();

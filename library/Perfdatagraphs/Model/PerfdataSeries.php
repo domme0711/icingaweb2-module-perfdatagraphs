@@ -46,6 +46,26 @@ class PerfdataSeries implements JsonSerializable
     }
 
     /**
+     * isEmpty checks if this series contains data and if the data is not null
+     */
+    public function isEmpty(): bool
+    {
+        if (count($this->values) === 0) {
+            return true;
+        }
+
+        $nonNullValues = array_filter($this->values, function ($v) {
+            return $v !== null;
+        });
+
+        if (count($nonNullValues) !== 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * isValid checks if this series contains valid data
      */
     public function isValid(): bool

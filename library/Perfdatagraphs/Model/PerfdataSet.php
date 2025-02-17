@@ -69,6 +69,27 @@ class PerfdataSet implements JsonSerializable
     }
 
     /**
+     * isEmpty checks if this dataset contains data
+     */
+    public function isEmpty(): bool
+    {
+        if (count($this->series) === 0) {
+            return true;
+        }
+
+        $sets = [];
+        foreach ($this->series as $s) {
+            $sets[] = $s->isEmpty();
+        }
+
+        if (in_array(true, $sets, true)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * isValid checks if this dataset contains valid data
      */
     public function isValid(): bool
