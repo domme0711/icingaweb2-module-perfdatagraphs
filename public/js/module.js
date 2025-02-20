@@ -68,8 +68,9 @@
                 _this.duration = this.defaultDuration;
             }
 
-            // Now we fetch and render
+            // Now we fetch
             _this.fetchData();
+            // ...and render in case we already have data
             _this.renderCharts();
         }
 
@@ -219,7 +220,7 @@
                     type: 'GET',
                     cache: true,
                     // I tried to have this async but that did cause some flickering when the data isn't loaded yet.
-                    async: false,
+                    async: true,
                     url: this.icinga.config.baseUrl + FETCH_ENDPOINT,
                     data: parameters,
                     dataType: 'json',
@@ -247,6 +248,8 @@
 
                         $(CHARTERRORCLASS).hide()
                         _this.data.set(elem.getAttribute('id'), data.data);
+                        // Trigger a render after we fetched data
+                        _this.renderCharts();
                     }
                 });
             }
