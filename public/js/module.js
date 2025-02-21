@@ -54,6 +54,10 @@
             // This elements contains the configured default timerange from the
             // module's configuration.
             const elem = document.getElementById('perfdatagraphs-default-timerange');
+            if (!elem) {
+                return;
+            }
+
             const defaultduration = elem.getAttribute('data-duration');
             this.duration = defaultduration;
             this.defaultDuration = defaultduration;
