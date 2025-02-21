@@ -219,11 +219,12 @@
                 let req = $.ajax({
                     type: 'GET',
                     cache: true,
-                    // I tried to have this async but that did cause some flickering when the data isn't loaded yet.
                     async: true,
                     url: this.icinga.config.baseUrl + FETCH_ENDPOINT,
                     data: parameters,
                     dataType: 'json',
+                    // TODO: What's a reasonable value here?
+                    timeout: 10000,
                     error: function (request, status, error) {
                         // Just in case the fetch controller explodes on us.
                         // There might be a better way.
