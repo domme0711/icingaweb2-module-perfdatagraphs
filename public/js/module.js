@@ -3,9 +3,9 @@
     'use strict';
 
     // The element in which we will add the charts
-    const CHARTCLASS = '.line-chart';
+    const CHART_CLASS = '.line-chart';
     // The element in which we will show errors
-    const CHARTERRORCLASS = 'p.line-chart-error';
+    const CHART_ERROR_CLASS = 'p.line-chart-error';
     // Enpoint to fetch the data from
     const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
 
@@ -163,6 +163,7 @@
                 // Subtract some pixels to avoid flickering scollbar in Chrome
                 // Maybe there's a better way?
                 width: width - 10,
+                // If you change this, remember to also change the collapsible height.
                 height: 200,
             }
         }
@@ -170,22 +171,22 @@
         isValidData(data)
         {
             if (data === undefined || data.length === 0) {
-                const errorMsg = $(CHARTERRORCLASS).attr('data-message-nodata');
-                $(CHARTERRORCLASS).text(errorMsg).show();
+                const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-nodata');
+                $(CHART_ERROR_CLASS).text(errorMsg).show();
                 this.icinga.logger.warn('perfdatagraphs: no data received');
                 return false;
             }
 
             if (data.errors !== undefined && data.errors.length > 0) {
-                const errorMsg = $(CHARTERRORCLASS).attr('data-message-error');
-                $(CHARTERRORCLASS).text(errorMsg +': '+ data.errors.join('; ')).show();
+                const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-error');
+                $(CHART_ERROR_CLASS).text(errorMsg +': '+ data.errors.join('; ')).show();
                 this.icinga.logger.error('perfdatagraphs', data.errors.join('; '));
                 return false;
             }
 
             if (data.data === undefined || data.data.length === 0) {
-                const errorMsg = $(CHARTERRORCLASS).attr('data-message-nodata');
-                $(CHARTERRORCLASS).text(errorMsg).show();
+                const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-nodata');
+                $(CHART_ERROR_CLASS).text(errorMsg).show();
                 this.icinga.logger.warn('perfdatagraphs: no data received');
                 return false;
             }
@@ -201,7 +202,7 @@
             var _this = this;
 
             // Get the elements we going to render the charts in
-            const lineCharts = document.querySelectorAll(CHARTCLASS);
+            const lineCharts = document.querySelectorAll(CHART_CLASS);
             // Check if the elements exist, just to be safe
             if (lineCharts.length < 1) {
                 return;
@@ -236,7 +237,7 @@
                         const el = $(request.responseText);
                         const errorMsg = $('p.error-message', el).text();
                         _this.icinga.logger.error('perfdatagraphs:', errorMsg);
-                        $(CHARTERRORCLASS).text($(CHARTERRORCLASS).attr('data-message-error') + ': ' + errorMsg).show();
+                        $(CHART_ERROR_CLASS).text($(CHART_ERROR_CLASS).attr('data-message-error') + ': ' + errorMsg).show();
                     },
                     beforeSend: function() {
                         // We show the spinner when we fetch data
@@ -251,7 +252,7 @@
                             return;
                         }
 
-                        $(CHARTERRORCLASS).hide()
+                        $(CHART_ERROR_CLASS).hide()
                         _this.data.set(elem.getAttribute('id'), data.data);
                         // Trigger a render after we fetched data
                         _this.renderCharts();
