@@ -18,11 +18,32 @@ trait PerfdataChart
     use Translation;
 
     /**
+     * @param string $hostName Name of the host
+     * @param string $serviceName Name of the service
+     * @param string $checkcommandName Name of the checkcommand
+     * @return string A valid HTML ID
+     */
+    private function generateID(string $hostName, string $serviceName, string $checkCommandName): string
+    {
+        $result = sprintf('%s-%s-%s', $hostName, $serviceName, $checkCommandName);
+
+        $replace = [
+            '/\s+/' => '_',
+        ];
+
+        return preg_replace(
+            array_keys($replace),
+            array_values($replace),
+            trim($result)
+        );
+    }
+
+    /**
      * createChart creates HTMLElements that are used to render charts in.
      *
-     * @param string $host Name of the host
-     * @param string $service Name of the service
-     * @param string $checkcommand Name of the checkcommand
+     * @param string $hostName Name of the host
+     * @param string $serviceName Name of the service
+     * @param string $checkcommandName Name of the checkcommand
      * @param bool $isHostCheck Is this a Host check
      *
      * @return ValidHtml
@@ -57,7 +78,8 @@ trait PerfdataChart
         // We use attributes on this elements to transport data
         // to the JavaScript part of this module.
         $chart = HtmlElement::create('div', [
-            'id' => sprintf('%s-%s-%s', $hostName, $serviceName, $checkCommandName),
+            // We use this as an identifier in JS
+            'id' => $this->generateID($hostName, $serviceName, $checkCommandName),
             'class' => 'line-chart',
             'data-host' => $hostName,
             'data-ishostcheck' => $isHostCheck ? 'true': 'false',
