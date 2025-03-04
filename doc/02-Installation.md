@@ -7,7 +7,13 @@ and a "backend module", which is responsible for fetching the data from a perfor
 
 1. Clone the Icinga Web Performance Data Graphs repository into `/usr/share/icingaweb2/modules/perfdatagraphs`
 
-2. Clone a Icinga Web Performance Data Graphs Backend repository into `/usr/share/icingaweb2/modules/perfdatagraphsgraphite`
+2. Clone a Icinga Web Performance Data Graphs Backend repository into `/usr/share/icingaweb2/modules/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphsgraphite/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphsinfluxdbv1/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphsinfluxdbv2/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphsinfluxdbv3/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphselasticsearch/`
+   - `/usr/share/icingaweb2/modules/perfdatagraphsopensearch/`
 
 3. Enable both modules using the `Configuration → Modules` menu
 
