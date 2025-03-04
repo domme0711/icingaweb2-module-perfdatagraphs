@@ -33,8 +33,15 @@ class ConfigController extends CompatController
      */
     public function generalAction(): void
     {
+        $config = Config::module('perfdatagraphs');
+
+        $c = [
+            'perfdatagraphs_default_timerange' => $config->get('perfdatagraphs', 'default_timerange', 'PT12H')
+        ];
+
         $form = (new PerfdataGraphsConfigForm())
-            ->setIniConfig(Config::module('perfdatagraphs'));
+            ->populate($c)
+            ->setIniConfig($config);
         $form->handleRequest();
         $this->addContent(new HtmlString($form->render()));
     }
