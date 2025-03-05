@@ -102,6 +102,11 @@ trait PerfdataSource
 
         $response->mergeCustomVars($customVarsMetrics);
 
+        // If the a dataset is set to be highlighted, move it at the top of the array.
+        if ($customvars[$cvh::CUSTOM_VAR_CONFIG_HIGHLIGHT] ?? false) {
+            $response->setDatasetToHighlight($customvars[$cvh::CUSTOM_VAR_CONFIG_HIGHLIGHT] ?? '');
+        }
+
         return $response;
     }
 }

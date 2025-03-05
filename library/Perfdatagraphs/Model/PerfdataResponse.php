@@ -132,4 +132,21 @@ class PerfdataResponse implements JsonSerializable
             }
         }
     }
+
+    /**
+     * setDatasetToHighlight sets a given dataset at the beginning of
+     * the data array, so that it is rendered first.
+     * @param string $name the name of the dataset to highlight
+     */
+    public function setDatasetToHighlight(string $name): void
+    {
+        if (!array_key_exists($name, $this->data)) {
+            return;
+        }
+
+        $value = [$name => $this->data[$name]];
+        unset($this->data[$name]);
+
+        $this->data = $value + $this->data;
+    }
 }

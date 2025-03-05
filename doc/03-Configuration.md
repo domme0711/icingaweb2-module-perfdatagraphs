@@ -12,6 +12,53 @@ A "backend module", which is responsible for fetching the data from a performanc
 
 Icinga 2 Custom Variables can be used to modify the rendering of graphs.
 
+| Custom Variable Name  | Function |
+|---------|--------|
+| perfdatagraphs_config_disable (bool) | Disable graphs for this object |
+| perfdatagraphs_config_backend (string) | Set a specific backend for this object |
+| perfdatagraphs_config_highlight (string) | Set the specified metric to be highlighted |
+| perfdatagraphs_metrics (dictionary)  | Modify a specific graphs for this object |
+| perfdatagraphs_config_metrics_include (array[string]) | Include only the specified metrics for this object |
+| perfdatagraphs_config_metrics_exclude (array[string]) | Exclude the specified metrics for this object |
+
+### perfdatagraphs_config_disable
+
+The custom variable `perfdatagraphs_config_disable (bool)` is used to disable a specific graph.
+
+```
+apply Service "icinga" {
+  vars.perfdatagraphs_config_disable = true
+}
+```
+
+### perfdatagraphs_config_backend
+
+The custom variable `perfdatagraphs_config_backend (string)` is used to set a specific backend for an object.
+The backend is specified via its name, see available backends in the module configuration.
+
+```
+apply Service "users" {
+  vars.perfdatagraphs_config_backend = "MyCustomGraphiteBackend"
+}
+```
+
+If the backend is not available no data will be returned.
+
+### perfdatagraphs_config_highlight
+
+The custom variable `perfdatagraphs_config_highlight (string)` is used to highlight a specific metric.
+This means that it will be the top most graph shown.
+
+```
+apply Service "ping6" {
+  vars.perfdatagraphs_config_highlight = "rta"
+}
+```
+
+If the given metric is unavailable, the order given by the backend will be used.
+
+### perfdatagraphs_metrics
+
 The custom variables `perfdatagraphs_metrics (dictionary)` is used to modify a specific graph:
 
 - `unit`, unit of this metric that should be displayed
@@ -37,22 +84,7 @@ apply Service "apt" {
 }
 ```
 
-The custom variable `perfdatagraphs_config_disable (bool)` is used to disable a specific graph.
-
-```
-apply Service "icinga" {
-  vars.perfdatagraphs_config_disable = true
-}
-```
-
-The custom variable `perfdatagraphs_config_backend (string)` is used to set a specific backend for an object.
-If the backend is not available no data will be returned.
-
-```
-apply Service "users" {
-  vars.perfdatagraphs_config_backend = "MyCustomGraphiteBackend"
-}
-```
+### perfdatagraphs_config_metrics_include/exclude
 
 The custom variable `perfdatagraphs_config_metrics_include (array[string])` is used to select specific metrics that
 should be rendered, if not set all metrics are rendered. Wildcards can be used with: `*`.
@@ -71,7 +103,7 @@ apply Service "icinga" {
 
 ### Director Integration
 
-Custom variables as dictionaries aren't available as in the DSL, thus to provide customvars for specific graphs you need to use the Director automation. 
+Custom variables as dictionaries aren't available as in the DSL, thus to provide customvars for specific graphs you need to use the Director automation.
 
 We assume graph customization isn't done regularly, thus we use the Director's automation process.
 
@@ -79,7 +111,7 @@ We assume graph customization isn't done regularly, thus we use the Director's a
 
 To proceed have the Fileshipper Module installed and configured. [Fileshipper](https://github.com/Icinga/icingaweb2-module-fileshipper)
 
-Please add a CSV file to your imports path with the following values. You can tweak and add dictionaries in the settings column. 
+Please add a CSV file to your imports path with the following values. You can tweak and add dictionaries in the settings column.
 
 ```
 object;template;command;settings
@@ -103,7 +135,7 @@ Add an import and import the created CSV file. And add two modifiers, one to dec
 
 #### Sync
 
-Afterwards you can add a sync rule which creates service templates with the dictionaries provided by the CSV. 
+Afterwards you can add a sync rule which creates service templates with the dictionaries provided by the CSV.
 
 ![screenshot_import](_images/screenshot_sync_settings.png)
 
@@ -111,7 +143,7 @@ Afterwards you can add a sync rule which creates service templates with the dict
 
 #### Templates
 
-After the sync observe the dictionaries visible in the preview section. You cannot edit the dictionaries in the templates but in the CSV. 
+After the sync observe the dictionaries visible in the preview section. You cannot edit the dictionaries in the templates but in the CSV.
 
 ![screenshot_import](_images/screenshot_service1.png)
 
