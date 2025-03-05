@@ -158,5 +158,33 @@ final class PerfdataResponseTest extends TestCase
         $pfr->addDataset($ds);
 
         $this->assertTrue($pfr->isValid());
+
+        $this->assertFalse($pfr->hasErrors());
     }
+
+    public function test_perfdata_setDatasetToHighlight()
+    {
+        $pfr = new PerfdataResponse();
+
+        $ds1 = new PerfdataSet('myset1', 'theunit1');
+        $ds2 = new PerfdataSet('myset2', 'theunit2');
+        $ds3 = new PerfdataSet('myset3', 'theunit3');
+
+        $pfr->addDataset($ds1);
+        $pfr->addDataset($ds2);
+        $pfr->addDataset($ds3);
+
+        $expected = '{"errors":[],"data":[{"title":"myset1","unit":"theunit1","timestamps":[],"series":[]},{"title":"myset2","unit":"theunit2","timestamps":[],"series":[]},{"title":"myset3","unit":"theunit3","timestamps":[],"series":[]}]}';
+        $actual = json_encode($pfr);
+        $this->assertEquals($expected, $actual);
+
+        $pfr->setDatasetToHighlight('foobar');
+
+        $pfr->setDatasetToHighlight('myset3');
+
+        $expected = '{"errors":[],"data":[{"title":"myset3","unit":"theunit3","timestamps":[],"series":[]},{"title":"myset1","unit":"theunit1","timestamps":[],"series":[]},{"title":"myset2","unit":"theunit2","timestamps":[],"series":[]}]}';
+        $actual = json_encode($pfr);
+        $this->assertEquals($expected, $actual);
+    }
+
 }
