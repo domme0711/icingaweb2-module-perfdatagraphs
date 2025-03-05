@@ -32,7 +32,7 @@ trait PerfdataSource
      *
      * @return PerfdataResponse
      */
-    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration, $isHostCheck): PerfdataResponse
+    public function fetchDataViaHook(string $host, string $service, string $checkcommand, string $duration, bool $isHostCheck): PerfdataResponse
     {
         $response = new PerfdataResponse();
 
@@ -45,7 +45,7 @@ trait PerfdataSource
         }
 
         // Get the object so that we can get its custom variables.
-        $object = $cvh->getObjectFromString($host, $service);
+        $object = $cvh->getObjectFromString($host, $service, $isHostCheck);
 
         // If there's no object we can just stop here.
         if (empty($object)) {

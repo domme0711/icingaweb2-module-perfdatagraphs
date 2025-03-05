@@ -84,17 +84,14 @@ class CustomVarsHelper
      *
      * @param string $host host name for the object
      * @param string $service service name for the object
+     * @param bool $isHostCheck Is this a Host check
      * @return Model
      */
-    public function getObjectFromString(string $host, string $service): ?Model
+    public function getObjectFromString(string $host, string $service, bool $isHostCheck): ?Model
     {
-        if ($service === 'hostalive') {
-            $service = null;
-        }
-
         // Determine the type if Model we need to use to get the data.
         try {
-            if (empty($service)) {
+            if ($isHostCheck) {
                 $object = $this->getHostObject($host);
             } else {
                 $object = $this->getServiceObject($host, $service);
