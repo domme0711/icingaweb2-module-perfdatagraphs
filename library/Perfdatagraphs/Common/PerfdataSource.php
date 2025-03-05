@@ -37,8 +37,10 @@ trait PerfdataSource
         $response = new PerfdataResponse();
 
         if (Module::exists('icingadb') && IcingadbSupport::useIcingaDbAsBackend()) {
+            Logger::debug('Used IcingaDB as database backend');
             $cvh = new IcinaDBCVH();
         } else {
+            Logger::debug('Used IDO as database backend');
             $cvh = new IdoCVH();
         }
 
@@ -47,6 +49,7 @@ trait PerfdataSource
 
         // If there's no object we can just stop here.
         if (empty($object)) {
+            Logger::warning('Failed to find object from given host-service strings');
             return $response;
         }
 
@@ -85,7 +88,10 @@ trait PerfdataSource
         try {
             $response = $hook->fetchData($request);
         } catch (Exception $e) {
-            $response->addError(sprintf('Failed to call PerfdataSource hook: %s', $e->getMessage()));
+            $err = sprintf('Failed to call PerfdataSource hook: %s', $e->getMessage());
+            Logger::error($err);
+            $response->addError($err);
+
             return $response;
         }
 

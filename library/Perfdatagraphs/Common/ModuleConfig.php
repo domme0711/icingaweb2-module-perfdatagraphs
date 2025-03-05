@@ -44,6 +44,7 @@ class ModuleConfig
         // Try to load the configuration
         if ($moduleConfig === null) {
             try {
+                Logger::debug('Loaded Perfdata Graphs module configuration to get Hook');
                 $moduleConfig = Config::module('perfdatagraphs');
             } catch (Exception $e) {
                 Logger::error('Failed to load Performance Data Graphs module configuration: %s', $e);
@@ -80,6 +81,7 @@ class ModuleConfig
         // Try to load the configuration
         if ($moduleConfig === null) {
             try {
+                Logger::debug('Loaded Perfdata Graphs module configuration to get Config');
                 $moduleConfig = Config::module('perfdatagraphs');
             } catch (Exception $e) {
                 Logger::error('Failed to load Perfdata Graphs module configuration: %s', $e);

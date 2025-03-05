@@ -35,7 +35,8 @@ class FetchController extends CompatController
         $isHostCheck = $this->params->getRequired('ishostcheck');
         $duration = $this->params->get('duration', $config['default_timerange']);
 
-        // Transform into boolean
+        // Transform the URL param into a boolean
+        // just because it is easier to work with
         $isHostCheck = $isHostCheck === 'true' ? true : false;
 
         // Fetch the perfdata for a given object via the hook.
@@ -53,7 +54,7 @@ class FetchController extends CompatController
         $response = $this->getResponse();
         $response
             ->setHeader('Content-Type', 'application/json')
-            // We could maybe do a more dynamic max-age, based on the duration for example
+            // We also could maybe do a more dynamic max-age, based on the duration for example
             ->setHeader('Cache-Control', sprintf('public, max-age=%s', $config['cache_lifetime']), true)
             ->setHeader('Content-Encoding', 'gzip')
             ->setHeader('Content-Length', strlen($body))
