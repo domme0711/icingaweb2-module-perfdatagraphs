@@ -8,6 +8,9 @@
     const CHART_ERROR_CLASS = 'p.line-chart-error';
     // Enpoint to fetch the data from
     const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
+    // Timeout for the data fetch
+    // TODO: Can be make this configurable?
+    const FETCH_TIMEOUT = 15000;
 
     class Perfdatagraphs extends Icinga.EventListener {
         // data contains the fetched chart data with the element ID where it is rendered as key.
@@ -168,8 +171,13 @@
             }
         }
 
+        /**
+         * isValidData validates the received data and shows errors if there are any
+         * contained in the data.
+         */
         isValidData(data)
         {
+            // There is absolutely nothing in the array we can use
             if (data === undefined || data.length === 0) {
                 const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-nodata');
                 $(CHART_ERROR_CLASS).text(errorMsg).show();
@@ -177,6 +185,7 @@
                 return false;
             }
 
+            // There are errors in the error section of the response
             if (data.errors !== undefined && data.errors.length > 0) {
                 const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-error');
                 $(CHART_ERROR_CLASS).text(errorMsg +': '+ data.errors.join('; ')).show();
@@ -184,6 +193,7 @@
                 return false;
             }
 
+            // There is nothing in the data section of the response
             if (data.data === undefined || data.data.length === 0) {
                 const errorMsg = $(CHART_ERROR_CLASS).attr('data-message-nodata');
                 $(CHART_ERROR_CLASS).text(errorMsg).show();
@@ -223,13 +233,12 @@
                 // Make a request to the internal controller to get the data for the charts
                 let req = $.ajax({
                     type: 'GET',
+                    dataType: 'json',
+                    timeout: FETCH_TIMEOUT,
                     cache: true,
                     async: true,
                     url: this.icinga.config.baseUrl + FETCH_ENDPOINT,
                     data: parameters,
-                    dataType: 'json',
-                    // TODO: What's a reasonable value here?
-                    timeout: 10000,
                     error: function (request, status, error) {
                         // Just in case the fetch controller explodes on us.
                         // There might be a better way.
