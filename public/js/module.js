@@ -372,6 +372,12 @@
                     return;
                 }
 
+                // Small hack. Since we always collapse
+                // we got to remove the button when there's just one chart
+                if (data.length === 1) {
+                    document.getElementById(elemID + '-control').style.display = 'none';
+                };
+
                 // The size can vary from chart to chart for example when
                 // there are two contains on the page.
                 let opts = {...sharedOpts, ...this.getChartSize(elem.offsetWidth)};
