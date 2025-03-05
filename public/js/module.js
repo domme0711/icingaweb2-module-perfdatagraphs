@@ -6,7 +6,10 @@
     const CHART_CLASS = '.line-chart';
     // The element in which we will show errors
     const CHART_ERROR_CLASS = 'p.line-chart-error';
-    // Enpoint to fetch the data from
+    // Names to identify the warning/critical series
+    const CHART_WARN_SERIESNAME = 'warning';
+    const CHART_CRIT_SERIESNAME = 'critical';
+    // Endpoint to fetch the data from
     const FETCH_ENDPOINT = '/perfdatagraphs/fetch';
     // Timeout for the data fetch
     // TODO: Can be make this configurable?
@@ -14,12 +17,12 @@
 
     class Perfdatagraphs extends Icinga.EventListener {
         // data contains the fetched chart data with the element ID where it is rendered as key.
-        // Where we store data inbetween the autorefresh.
+        // Where we store data in between the autorefresh.
         data = new Map();
         // plots contains the chart objects with the element ID where it is rendered as key.
         // Used for resizing the charts.
         plots = new Map();
-        // Where we store data inbetween autorefresh
+        // Where we store data in between autorefresh
         currentSelect = null;
         currentCursor = null;
         currentSeriesShow = {1: true};
@@ -48,7 +51,7 @@
         }
 
         /**
-         * rendered makes sure the data is available and then renderes the charts
+         * rendered makes sure the data is available and then renders the charts
          */
         rendered(event, isAutorefresh)
         {
@@ -92,7 +95,7 @@
             const duration = target.getAttribute('data-duration');
 
             // Reset the selection and set the duration.
-            // These need to be stored inbetween the autorefresh
+            // These need to be stored in between the autorefresh
             _this.currentSelect = {min: 0, max: 0};
             _this.duration = duration;
 
@@ -154,21 +157,6 @@
             // Add the given alpha.
             const [_, r, g, b] = rgbMatch;
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        /**
-         * getChartSize is used to recalculate the canvas size based on the
-         * object-detail colum width.
-         */
-        getChartSize(width)
-        {
-            return {
-                // Subtract some pixels to avoid flickering scollbar in Chrome
-                // Maybe there's a better way?
-                width: width - 10,
-                // If you change this, remember to also change the collapsible height.
-                height: 200,
-            }
         }
 
         /**
@@ -275,42 +263,101 @@
         }
 
         /**
+         * getChartSize is used to recalculate the canvas size based on the
+         * object-detail colum width.
+         */
+        getChartSize(width)
+        {
+            return {
+                // Subtract some pixels to avoid flickering scollbar in Chrome
+                // Maybe there's a better way?
+                width: width - 10,
+                // If you change this, remember to also change the collapsible height.
+                height: 200,
+            }
+        }
+
+        /**
+         * getChartOptions returns shared options for all charts.
+         */
+        getChartOptions(axesColor)
+        {
+            // Properties for the x and y axes
+            const xProperty = {
+                stroke: axesColor,
+                grid: { stroke: axesColor, width: 0.5 },
+                ticks: { stroke: axesColor, width: 0.5 }
+            }
+
+            const yProperty = {
+                stroke: axesColor,
+                grid: { stroke: axesColor, width: 0.5 },
+                ticks: { stroke: axesColor, width: 0.5 },
+                values: (u, vals, space) => vals.map(v => this.formatNumber(v))
+            }
+
+            // The shared options for each chart. These
+            // can then be combined with individual options e.g. the width.
+            const opts = {
+                cursor: { sync: { key: 0, setSeries: true } },
+                scales: { x: { time: true } },
+                axes: [ xProperty, yProperty ],
+                // series holds the config of each dataset, such as visibility, styling,
+                // labels & value display in the legend
+                series: [ {} ],
+                hooks: {
+                    init: [
+                        u => {
+                            u.over.ondblclick = e => {
+                                // We need to reset the currentSelect to the min/max
+                                // when we zoom out again.
+                                this.currentSelect = {min: 0, max: 0};
+                            }
+                        }
+                    ],
+                    setCursor: [
+                        (u) => {
+                            // We need to store the current cursor
+                            // to refresh it when the autorefresh hits.
+                            this.currentCursor = u.cursor;
+                        }
+                    ],
+                    setSeries: [
+                        (u, sidx) => {
+                            // When series are toggled, we store the current option
+                            // so that it can be restored when the Icinga Web autorefresh hits.
+                            if (u.series[sidx] !== undefined) {
+                                this.currentSeriesShow[sidx] = u.series[sidx].show;
+                            }
+                        }
+                    ],
+                    setSelect: [
+                        u => {
+                            // When a select is performed, we store the current selection
+                            // so that it can be restored when the Icinga Web autorefresh hits.
+                            let _min = u.posToVal(u.select.left, 'x');
+                            let _max = u.posToVal(u.select.left + u.select.width, 'x');
+                            this.currentSelect = {min: _min, max: _max};
+                        }
+                    ]
+                }
+            };
+
+            return opts;
+        }
+
+        /**
          * renderCharts creates the canvas objects given the provided datasets.
-         * TODO: Maybe refactor and split up this method a bit.
          */
         renderCharts()
         {
-            // Properties for the x and y axes
+            // Get the colors from these sneaky little HTML elements
             const axesColor = $('div.axes-color').css('background-color');
             const warningColor = $('div.warning-color').css('background-color');
             const criticalColor = $('div.critical-color').css('background-color');
             const valueColor = $('div.value-color').css('background-color');
 
-            // TODO: Dry refactor this at some point
-            const xProperty = {
-                stroke: axesColor,
-                grid: {
-                    stroke: axesColor,
-                    width: 0.5,
-                },
-                ticks: {
-                    stroke: axesColor,
-                    width: 0.5,
-                }
-            }
-
-            const yProperty = {
-                stroke: axesColor,
-                grid: {
-                    stroke: axesColor,
-                    width: 0.5,
-                },
-                ticks: {
-                    stroke: axesColor,
-                    width: 0.5,
-                },
-                values: (u, vals, space) => vals.map(v => this.formatNumber(v)),
-            }
+            const sharedOpts = this.getChartOptions(axesColor);
 
             // Reset the existing plots map for the new rendering
             this.plots = new Map();
@@ -325,66 +372,9 @@
                     return;
                 }
 
-                // The options for each chart
-                const opts = {
-                    ...this.getChartSize(elem.offsetWidth),
-                    cursor: {
-                        sync: {
-                            key: 0,
-                            setSeries: true,
-                        },
-                    },
-                    scales: {
-                        x: {
-                            time: true,
-                        },
-                    },
-                    axes: [
-                        xProperty,
-                        yProperty,
-                    ],
-                    // series holds the config of each dataset, such as visibility, styling,
-                    // labels & value display in the legend
-                    series: [
-                        {},
-                    ],
-                    hooks: {
-                        init: [
-                            u => {
-                                u.over.ondblclick = e => {
-                                    // We need to reset the currentSelect to the min/max
-                                    // when we zoom out again.
-                                    this.currentSelect = {min: 0, max: 0};
-                                }
-                            }
-                        ],
-                        setCursor: [
-                            (u) => {
-                                // We need to store the current cursor
-                                // to refresh it when the autorefresh hits.
-                                this.currentCursor = u.cursor;
-                            }
-                        ],
-                        setSeries: [
-                            (u, sidx) => {
-                                // When series are toggled, we store the current option
-                                // so that it can be restored when the Icinga Web autorefresh hits.
-                                if (u.series[sidx] !== undefined) {
-                                    this.currentSeriesShow[sidx] = u.series[sidx].show;
-                                }
-                            }
-                        ],
-                        setSelect: [
-                            u => {
-                                // When a select is performed, we store the current selection
-                                // so that it can be restored when the Icinga Web autorefresh hits.
-                                let _min = u.posToVal(u.select.left, 'x');
-                                let _max = u.posToVal(u.select.left + u.select.width, 'x');
-                                this.currentSelect = {min: _min, max: _max};
-                            }
-                        ]
-                    }
-                };
+                // The size can vary from chart to chart for example when
+                // there are two contains on the page.
+                let opts = {...sharedOpts, ...this.getChartSize(elem.offsetWidth)};
 
                 // Add each element to the resize observer so that we can
                 // resize the chart when its container changes
@@ -419,11 +409,11 @@
                         let fill = dataset.fill ?? this.ensureRgba(valueColor, 0.3);
 
                         // Add a new series to the plot. Need adjust the index, since 0 is the timestamps
-                        if (dataset.series[idx].name === 'warning') {
+                        if (dataset.series[idx].name === CHART_WARN_SERIESNAME) {
                             stroke = warningColor;
                             fill = false;
                         }
-                        if (dataset.series[idx].name === 'critical') {
+                        if (dataset.series[idx].name === CHART_CRIT_SERIESNAME) {
                             stroke = criticalColor;
                             fill = false;
                         }
@@ -454,7 +444,9 @@
 
                     // Add the chart to the map which we use for the resize observer
                     const _plots = this.plots.get(elem) || [];
+
                     _plots.push(u)
+
                     this.plots.set(elem, _plots);
                 });
             });
