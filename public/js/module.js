@@ -234,6 +234,8 @@
                         // Just in case the fetch controller explodes on us.
                         // There might be a better way.
                         $('i.spinner').hide();
+                        // See module.less for why we set the min-height
+                        $('.perfdata-charts-container').css('min-height', '0px');
                         const el = $(request.responseText);
                         const errorMsg = $('p.error-message', el).text();
                         _this.icinga.logger.error('perfdatagraphs:', errorMsg);
@@ -249,6 +251,8 @@
                         _this.icinga.logger.debug('perfdatagraphs', 'finish fetchData', data);
 
                         if (! _this.isValidData(data)) {
+                            // See module.less for why we set the min-height
+                            $('.perfdata-charts-container').css('min-height', '0px');
                             return;
                         }
 

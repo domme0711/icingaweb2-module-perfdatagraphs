@@ -7,12 +7,14 @@ Since the uplot default is to dark for dark mode
 }
 
 /*
-The container is always collapsed and this is to show a
-small hint at the content.
-If you change this, remember to also change the chart height.
+We wanted to use Icinga Web's collapsible.js, however,
+since we fetch content after the side is loaded the
+collapsible.js event handler did not handle our content correctly.
+Thus, we set the visible-height=0 so that the container is
+always collapsed and we use the min-height to show a single chart.
 */
 .perfdata-charts-container {
-    min-height: 150px;
+    min-height: 300px;
 }
 
 /*
