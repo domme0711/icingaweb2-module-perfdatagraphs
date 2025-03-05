@@ -51,13 +51,6 @@ no the easiest to work with, we decided to use "flat" data types where possible 
 However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
 would have increased the complexity of the code base.
 
-### Missing data
-
-Missing data is not shown in the charts, this might cause gaps in the rendering.
-We will not take any steps to hide these or provide a default in case of missing data.
-Rationale behind this was, to transparently show the incomplete data and avoid
-wrong interpretation when data is set to a default value.
-
 ### Fixed y-axis units
 
 Values for the y-axis are automatically transformed into the following metric (SI) prefixes:

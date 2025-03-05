@@ -18,6 +18,7 @@ class CustomVarsHelper
     public const CUSTOM_VAR_CONFIG_PREFIX  = 'perfdatagraphs_config';
     public const CUSTOM_VAR_CONFIG_INCLUDE = 'perfdatagraphs_config_metrics_include';
     public const CUSTOM_VAR_CONFIG_EXCLUDE = 'perfdatagraphs_config_metrics_exclude';
+    public const CUSTOM_VAR_CONFIG_HIGHLIGHT = 'perfdatagraphs_config_highlight';
     public const CUSTOM_VAR_CONFIG_DISABLE = 'perfdatagraphs_config_disable';
     public const CUSTOM_VAR_CONFIG_BACKEND = 'perfdatagraphs_config_backend';
     public const CUSTOM_VAR_METRICS = 'perfdatagraphs_metrics';

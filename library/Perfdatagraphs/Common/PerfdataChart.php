@@ -66,20 +66,39 @@ trait PerfdataChart
             $main->add($d);
         }
 
+        // How we identify our elements in JS.
+        $elemID = $this->generateID($hostName, $serviceName, $checkCommandName);
+
         // Where we store all elements for the charts.
         $charts = HtmlElement::create('div', [
             'class' => 'perfdata-charts-container collapsible',
             // Note: We could have a configuration option to change the
             // "always collapsed" behaviour
             'data-visible-height' => 0,
+            'data-toggle-element' => '.perfdata-charts-container-control',
         ]);
+
+        // We create our own collapsible control because we might
+        // want to identify it in the JS
+        $chartsControl = HtmlElement::create('div', [
+            'class' => 'perfdata-charts-container-control',
+            'id' => $elemID . '-control',
+        ]);
+
+        $b = new HtmlElement(
+            'button',
+            null,
+            new Icon('angle-double-up', ['class' => 'collapse-icon']),
+            new Icon('angle-double-down', ['class' => 'expand-icon'])
+        );
+
+        $chartsControl->add($b);
 
         // Element in which the charts will get rendered.
         // We use attributes on this elements to transport data
         // to the JavaScript part of this module.
         $chart = HtmlElement::create('div', [
-            // We use this as an identifier in JS
-            'id' => $this->generateID($hostName, $serviceName, $checkCommandName),
+            'id' => $elemID,
             'class' => 'line-chart',
             'data-host' => $hostName,
             'data-ishostcheck' => $isHostCheck ? 'true': 'false',
@@ -107,6 +126,7 @@ trait PerfdataChart
         $charts->add($chart);
 
         $main->add($charts);
+        $main->add($chartsControl);
 
         return $main;
     }
