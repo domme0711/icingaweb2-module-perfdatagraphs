@@ -120,7 +120,7 @@
                 if (u < 0) {
                     u = 0;
                 }
-            return nn[0] * Math.pow(10, +nn[1] - (u - zeroIndex) * 3) + unitList[u];
+            return Math.round(nn[0] * Math.pow(10, +nn[1] - (u - zeroIndex) * 3)) + unitList[u];
         }
 
         /**
