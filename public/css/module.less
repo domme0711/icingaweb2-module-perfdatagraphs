@@ -14,7 +14,7 @@ Thus, we set the visible-height=0 so that the container is
 always collapsed and we use the min-height to show a single chart.
 */
 .perfdata-charts-container {
-    min-height: 270px;
+    min-height: 272px;
 }
 
 /*
@@ -51,4 +51,14 @@ i.spinner {
     animation-duration: 2000ms;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+}
+
+/*
+Small fix so that the active border is not cut off
+*/
+ul.quick-actions {
+    padding: 3px;
+    & > li > a:focus {
+        outline: none;
+    }
 }
