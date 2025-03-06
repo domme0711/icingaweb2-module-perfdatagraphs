@@ -44,7 +44,7 @@ class FetchController extends CompatController
 
         if (! $perfdata->isValid()) {
             // If the data is not valid, return an error
-            $perfdata->addError('Invalid data received');
+            $perfdata->addError($this->translate('Invalid data received'));
         }
 
         // Use gzip encoding to reduce the amount of transfered data
