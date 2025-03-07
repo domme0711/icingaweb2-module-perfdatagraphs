@@ -1,16 +1,26 @@
 # Configuration
 
-## Backend Configuration
+This describes the configuration options for the "frontend module".
 
-A "backend module", which is responsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.), can be configured:
+Each individual "backend module", which is responsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.), has it's own configuration options.
+
+## Performance Data Backend
+
+Hint: If you only installed one backend module, it will be used by default. No need for configuration.
 
 1. Install the Icinga Web Performance Data Graphs backend module you need (depending on where Icinga2 sends its data)
-2. If you only install one backend module, you do not need to configure it
-3. If there is more than one, configure the backend using the `Configuration → Modules → Performance Data Graphs → General` menu
+2. If there is more than one, configure the backend using the `Configuration → Modules → Performance Data Graphs → General` menu
+
+## Time Range
+
+The value for the "Current" time range button can be configured.
+These buttons use ISO8601 durations in the background (e.g. PT3H, P1D, P1Y).
+
+By default it uses `PT12H` meaning, 12 hours.
 
 ## Custom Variables
 
-Icinga 2 Custom Variables can be used to modify the rendering of graphs.
+Icinga custom variables can be used to modify the rendering of graphs.
 
 | Custom Variable Name  | Function |
 |---------|--------|
@@ -101,7 +111,7 @@ apply Service "icinga" {
 }
 ```
 
-### Director Integration
+## Director Integration
 
 Custom variables as dictionaries aren't available as in the DSL, thus to provide customvars for specific graphs you need to use the Director automation.
 

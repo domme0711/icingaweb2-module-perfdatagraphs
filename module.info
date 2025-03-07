@@ -5,5 +5,8 @@ Requires:
   Modules: icingadb (>=1.0.0), monitoring (>= 2.12.0)
 Description: Icinga Web Module for Performance Data Graphs
  This module enables graphs on the Host and Service Detail View for
- the repsective performance data. The data is fetched by a "backend module",
- these backend modules also need to be enabled.
+ the repsective performance data.
+
+
+ The data is fetched by a "backend module",
+ at least one backend module also need to be enabled.
