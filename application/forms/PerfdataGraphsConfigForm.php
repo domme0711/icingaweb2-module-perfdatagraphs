@@ -56,7 +56,7 @@ class PerfdataGraphsConfigForm extends ConfigForm
             [
                 'required' => true,
                 'label' => $this->translate('Default Data Backend'),
-                'description' => $this->translate('Default backend for the performance data graphs'),
+                'description' => $this->translate('Default backend for the performance data graphs. With only one backend is installed, it will be used by default.'),
                 'multiOptions' => array_merge($choose, array_combine($backends, $backends)),
                 'class' => 'autosubmit',
             ]

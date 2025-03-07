@@ -9,7 +9,7 @@ $this->provideConfigTab(
     [
         'title' => $this->translate('General'),
         'label' => $this->translate('General'),
-        'url'   => 'config/general'
+        'url' => 'config/general'
     ]
 );
 
