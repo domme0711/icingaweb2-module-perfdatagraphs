@@ -100,7 +100,7 @@ The custom variable `perfdatagraphs_config_metrics_include (array[string])` is u
 should be rendered, if not set all metrics are rendered. Wildcards can be used with: `*`.
 
 The custom variable `perfdatagraphs_config_metrics_exclude (array[string])` is used to exclude a metric.
-This takes precedence over the include.
+This takes precedence over the include. Wildcards are not supported here.
 
 Examples:
 
