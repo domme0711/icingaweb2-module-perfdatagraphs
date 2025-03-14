@@ -1,6 +1,6 @@
 {
     "description": "perfdatagraphs includes the package.json only to make the JavaScript dependencies transparent",
     "dependencies": {
-        "uplot": "^1.6.31"
+        "uplot": "^1.6.32"
     }
 }

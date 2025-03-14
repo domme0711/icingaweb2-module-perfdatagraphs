@@ -2,10 +2,13 @@
     box-sizing:  border-box;
 }
 .uplot  {
+    /* font-family:  system-ui,  -apple-system,  "Segoe UI",  Roboto,  "Helvetica Neue",  Arial,  "Noto Sans",  sans-serif,  "Apple Color Emoji",  "Segoe UI Emoji",  "Segoe UI Symbol",  "Noto Color Emoji"; */
     line-height:  1.5;
     width:  min-content;
 }
 .u-title  {
+    /* text-align:  center; */
+    /* font-size:  18px; */
     font-weight:  bold;
 }
 .u-wrap  {
@@ -28,6 +31,9 @@
     position:  absolute;
 }
 .u-legend  {
+    /* font-size:  14px; */
+    /* margin:  auto; */
+    /* text-align:  center; */
 }
 .u-inline  {
     display:  block;
