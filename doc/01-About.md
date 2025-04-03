@@ -52,27 +52,7 @@ no the easiest to work with, we decided to use "flat" data types where possible 
 However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
 would have increased the complexity of the code base. Thus, we decided to use dictionaries.
 
-### Fixed y-axis units
+### Y-axis units
 
-Values for the y-axis are automatically transformed into the following metric (SI) prefixes.
+Too high or low values for the y-axis are automatically transformed into exponential notation.
 This tries to be a "one-size-fits-all" solution since check plugin output can vary widely.
-
-| Prefix  | Symbol |
-|---------|--------|
-| Yotta   | Y      |
-| Zetta   | Z      |
-| Exa     | E      |
-| Peta    | P      |
-| Tera    | T      |
-| Giga    | G      |
-| Mega    | M      |
-| Kilo    | k      |
-| (Base)  |        |
-| Milli   | m      |
-| Micro   | µ      |
-| Nano    | n      |
-| Pico    | p      |
-| Femto   | f      |
-| Atto    | a      |
-| Zepto   | z      |
-| Yocto   | y      |
