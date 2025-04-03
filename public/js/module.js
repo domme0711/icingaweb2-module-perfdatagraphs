@@ -106,21 +106,22 @@
 
 
         /**
-         * formatNumber transforms numbers into metric (SI) prefix notation. Used in the y axis.
+         * formatNumber returns exponential format for too low/high numbers
          */
         formatNumber(n)
         {
-            const unitList = ['y', 'z', 'a', 'f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-            const zeroIndex = 8;
-            const nn = n.toExponential(2).split(/e/);
-            let u = Math.floor(+nn[1] / 3) + zeroIndex;
-            if (u > unitList.length - 1) {
-                u = unitList.length - 1;
-            } else
-                if (u < 0) {
-                    u = 0;
-                }
-            return Math.round(nn[0] * Math.pow(10, +nn[1] - (u - zeroIndex) * 3)) + unitList[u];
+            if (n == 0) {
+                return 0;
+            }
+
+            const str = n.toString();
+
+            // If the output would be too long we change to exponential
+            if (str.length >= 20) {
+                return n.toExponential();
+            }
+
+            return str;
         }
 
         /**
@@ -293,7 +294,27 @@
                 stroke: axesColor,
                 grid: { stroke: axesColor, width: 0.5 },
                 ticks: { stroke: axesColor, width: 0.5 },
-                values: (u, vals, space) => vals.map(v => this.formatNumber(v))
+                values: (u, vals, space) => vals.map(v => this.formatNumber(v)),
+                size(self, values, axisIdx, cycleNum) {
+                    // We calculate the size of the axis based on the width of the elements
+                    let axis = self.axes[axisIdx];
+
+                    // Bail out, force convergence
+                    if (cycleNum > 1)
+                        return axis._size;
+
+                    let axisSize = axis.ticks.size + axis.gap;
+
+                    // Find longest value
+                    let longestVal = (values ?? []).reduce((acc, val) => (val.length > acc.length ? val : acc), "");
+
+                    if (longestVal != "") {
+                        self.ctx.font = axis.font[0];
+                        axisSize += self.ctx.measureText(longestVal).width / devicePixelRatio;
+                    }
+
+                    return Math.ceil(axisSize);
+                },
             }
 
             // The shared options for each chart. These
