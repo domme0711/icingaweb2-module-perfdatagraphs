@@ -1,3 +1,5 @@
+**Note:** This is an early release that is still in development and prone to change
+
 # Icinga Web Performance Data Graphs
 
 Icinga Web Module for Performance Data Graphs. This module enables graphs on the Host and Service Detail View for
