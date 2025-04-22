@@ -1,0 +1,72 @@
+{
+    "ServiceTemplate": {
+        "perfdatagraphs_icingadb": {
+            "check_command": "icingadb",
+            "fields": [],
+            "object_name": "perfdatagraphs_icingadb",
+            "object_type": "template",
+            "vars": {
+                "perfdatagraphs_config_highlight": "icingadb_last_full_sync_duration",
+                "perfdatagraphs_config_metrics_include": [
+                    "icinga*_last_full_*_duration",
+                    "icinga*_backlog"
+                ],
+                "perfdatagraphs_metrics": {
+                    "icinga2_last_full_dump_duration": {
+                        "unit": "milliseconds"
+                    },
+                    "icinga2_redis_query_backlog": {
+                        "unit": "seconds"
+                    },
+                    "icingadb_history_backlog": {
+                        "unit": "seconds"
+                    },
+                    "icingadb_last_full_sync_duration": {
+                        "unit": "milliseconds"
+                    },
+                    "icingadb_runtime_backlog": {
+                        "unit": "seconds"
+                    }
+                }
+            }
+        },
+        "perfdatagraphs_icinga": {
+            "check_command": "icinga",
+            "fields": [],
+            "object_name": "perfdatagraphs_icinga",
+            "object_type": "template",
+            "vars": {
+                "perfdatagraphs_config_highlight": "avg_execution_time",
+                "perfdatagraphs_config_metrics_exclude": [ "num_hosts*", "num_services*" ],
+                "perfdatagraphs_config_metrics_include": [
+                    "avg_execution_time",
+                    "avg_latency",
+                    "*work_queue_item_rate"
+                ]
+            }
+        },
+        "perfdatagraphs_cluster-zone": {
+            "check_command": "cluster-zone",
+            "fields": [],
+            "object_name": "perfdatagraphs_cluster-zone",
+            "object_type": "template",
+            "vars": {
+                "perfdatagraphs_config_highlight": "slave_lag",
+                "perfdatagraphs_metrics": {
+                    "slave_lag": {
+                        "unit": "milliseconds"
+                    }
+                }
+            }
+        },
+        "perfdatagraphs_cluster": {
+            "check_command": "cluster",
+            "fields": [],
+            "object_name": "perfdatagraphs_cluster",
+            "object_type": "template",
+            "vars": {
+              "perfdatagraphs_config_metrics_include": ["*rate"]
+            }
+        }
+    }
+}
