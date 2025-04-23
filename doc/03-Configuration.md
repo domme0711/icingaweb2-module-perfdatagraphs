@@ -100,7 +100,7 @@ The `unit` option can be any string, however, some unit of measurement can be us
 - `unit = "seconds"`
 - `unit = "percentage"`
 
-**Hint:** Be aware that Icinga2 sends normalized performance data to the backend (e.g. a check plugin that returns `ms` will be `s` in the backend).
+**Hint:** Be aware that Icinga 2 sends normalized performance data to the backend (e.g. a check plugin that returns `ms` will be `s` in the backend).
 
 ### perfdatagraphs_config_metrics_include/exclude
 

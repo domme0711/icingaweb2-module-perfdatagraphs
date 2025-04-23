@@ -14,7 +14,7 @@ use ipl\Stdlib\Filter;
 use ipl\Orm\Model;
 
 /**
- * CustomVarsHelper is a helper class to work with custom variables of Icinga2 objects.
+ * CustomVarsHelper is a helper class to work with custom variables of Icinga objects.
  */
 class CustomVarsHelper
 {

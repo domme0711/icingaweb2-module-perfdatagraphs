@@ -10,7 +10,7 @@ use Icinga\Module\Monitoring\Object\Service;
 use Icinga\Exception\NotFoundError;
 
 /**
- * CustomVarsHelper is a helper class to work with custom variables of Icinga2 objects.
+ * CustomVarsHelper is a helper class to work with custom variables of Icinga objects.
  */
 class CustomVarsHelper
 {

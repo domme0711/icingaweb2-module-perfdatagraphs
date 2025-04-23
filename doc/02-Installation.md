@@ -26,4 +26,4 @@ Examples:
 
 5. (optionally) Grant permissions for the "frontend" and "backend" module for users
 
-6. (optionally) Configure specific graphs via Icinga2 Custom Variables
+6. (optionally) Configure specific graphs via Icinga 2 Custom Variables
