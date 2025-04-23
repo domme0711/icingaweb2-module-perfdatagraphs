@@ -3,7 +3,7 @@
 Icinga Web Module for Performance Data Graphs. This module enables graphs on the Host and Service Detail View for
 the respective performance data.
 
-The data is fetched by a "backend module", at least one backend module also need to be enabled.
+The actual data is fetched by a "backend module", this module and at least one backend module need to be enabled.
 
 ## Features
 
@@ -29,9 +29,11 @@ can vary widely. Meaning one metric could be double digits and another only frac
 Custom configuration for when metrics should be combined in a single chart would highly
 increase the complexity of this module.
 
+An option to manually merge metrics into one chart could be added in the future.
+
 ### Fixed time range selection
 
-We decided to have a fixed set of time range to choose from.
+We decided to have a fixed set of time ranges to choose from.
 Having user input for the time ranges would increase the complexity of this module.
 
 ### Warning and critical series
@@ -46,7 +48,7 @@ We decided to use custom variables for graph configuration.
 This avoids having another database for configuration and should integrate well with existing
 Icinga configuration management tools.
 
-In order to ease integration with Icinga Director, in which Icinga2 dictionary data types are currently
+In order to ease integration with the Icinga Director, in which Icinga 2 dictionary data types are currently
 no the easiest to work with, we decided to use "flat" data types where possible (e.g. `perfdatagraphs_config_disable`).
 
 However, for the `perfdatagraphs_metrics` variable a dictionary is the natural fit and "flat" data types
