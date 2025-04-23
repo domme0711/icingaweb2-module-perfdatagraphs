@@ -94,6 +94,14 @@ apply Service "apt" {
 }
 ```
 
+The `unit` option can be any string, however, some unit of measurement can be used to apply custom formatting:
+
+- `unit = "bytes"`
+- `unit = "seconds"`
+- `unit = "percentage"`
+
+**Hint:** Be aware that Icinga2 sends normalized performance data to the backend (e.g. a check plugin that returns `ms` will be `s` in the backend).
+
 ### perfdatagraphs_config_metrics_include/exclude
 
 The custom variable `perfdatagraphs_config_metrics_include (array[string])` is used to select specific metrics that
