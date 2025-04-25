@@ -84,20 +84,23 @@ The custom variables `perfdatagraphs_metrics (dictionary)` is used to modify a s
 - `stroke` color of the line of the graph
 
 The variable `perfdatagraphs_metrics` is a dictionary, its keys are the name of the metric
-you want to modify. Examples:
+you want to modify. Wildcards can be used with: `*`.
+
+Examples:
 
 ```
 apply Service "apt" {
-  // Set or override a unit for a metric
-  vars.perfdatagraphs_metrics["available_upgrades"] = {
-    unit = "packages"
-  }
-
   // Set specific colors for a metric
   vars.perfdatagraphs_metrics["critical_updates"] = {
-    unit = "packages"
     fill = "rgba(255, 0, 30, 0.3)"
     stroke = "rgba(255, 0, 30, 1)"
+  }
+}
+
+apply Service "disk" {
+  // Set or override a unit for multiple metric
+  vars.perfdatagraphs_metrics["/opt/*"] = {
+    unit = "bytes"
   }
 }
 ```

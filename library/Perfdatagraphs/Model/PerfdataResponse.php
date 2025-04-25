@@ -93,6 +93,25 @@ class PerfdataResponse implements JsonSerializable
     }
 
     /**
+     * getCustomvarForDataSet uses fnmatch to return the customvars for a given dataset.
+     * array_find would have been nice but only in PHP 8.4.
+     *
+     * @param array $customvars array of all customvars
+     * @param string $datasetTitle the title of the dataset to find customvars for
+     * @return ?array customvars for the matching dataset
+     */
+    protected function getCustomvarForDataSet(array $customvars, string $datasetTitle): ?array
+    {
+        foreach (array_keys($customvars) as $cvarTitle) {
+            if (fnmatch($cvarTitle, $datasetTitle)) {
+                return $customvars[$cvarTitle];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * mergeCustomVars merges the performance data with the custom vars,
      * so that each series receives its corresponding vars.
      * CustomVars override data in the PerfdataSet.
@@ -118,17 +137,22 @@ class PerfdataResponse implements JsonSerializable
         }
 
         foreach ($this->data as $dkey => $dataset) {
-            $title = $dataset->getTitle();
-            if (array_key_exists($dataset->getTitle(), $customvars)) {
-                if (isset($customvars[$title]['unit'])) {
-                    $this->data[$dkey]->setUnit($customvars[$title]['unit']);
-                }
-                if (isset($customvars[$title]['fill'])) {
-                    $this->data[$dkey]->setFill($customvars[$title]['fill']);
-                }
-                if (isset($customvars[$title]['stroke'])) {
-                    $this->data[$dkey]->setStroke($customvars[$title]['stroke']);
-                }
+            $cvar = $this->getCustomvarForDataSet($customvars, $dkey);
+
+            // If we don't have any customvar for the given dataset, skip
+            if (empty($cvar)) {
+                continue;
+            }
+
+            // Override the elements if there are values for them
+            if (isset($cvar['unit'])) {
+                $this->data[$dkey]->setUnit($cvar['unit']);
+            }
+            if (isset($cvar['fill'])) {
+                $this->data[$dkey]->setFill($cvar['fill']);
+            }
+            if (isset($cvar['stroke'])) {
+                $this->data[$dkey]->setStroke($cvar['stroke']);
             }
         }
     }
