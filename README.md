@@ -5,10 +5,15 @@
 Icinga Web Module for Performance Data Graphs. This module enables graphs on the Host and Service Detail View for
 the respective performance data.
 
-The data is fetched by a "backend module", at least one backend module also need to be enabled.
+<img src="https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs/raw/main/doc/_images/screenshot_light.png" alt="Icinga Performance Data Graphs Light Mode">
 
-![Graphs Light](doc/_images/screenshot_light.png)
-![Graphs Dark](doc/_images/screenshot_dark.png)
+<img src="https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs/raw/main/doc/_images/screenshot_dark.png" alt="Icinga Performance Data Graphs Dark Mode">
+
+The data is fetched by a "backend module", at least one backend module also need to be enabled:
+
+* [Graphite Backend](https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs-graphite/)
+* [Influxdb v1 Backend](https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs-influxdbv1)
+* [Influxdb v2 Backend](https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs-influxdbv2)
 
 This module aims to be a "batteries included" and opinionated solution.
 Configuration options are limited by design.
