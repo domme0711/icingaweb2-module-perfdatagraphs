@@ -13,7 +13,7 @@
                 ],
                 "perfdatagraphs_metrics": {
                     "icinga2_last_full_dump_duration": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     },
                     "icinga2_redis_query_backlog": {
                         "unit": "seconds"
@@ -22,7 +22,7 @@
                         "unit": "seconds"
                     },
                     "icingadb_last_full_sync_duration": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     },
                     "icingadb_runtime_backlog": {
                         "unit": "seconds"
@@ -54,7 +54,7 @@
                 "perfdatagraphs_config_highlight": "slave_lag",
                 "perfdatagraphs_metrics": {
                     "slave_lag": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     }
                 }
             }

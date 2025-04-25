@@ -12,7 +12,7 @@
                         "unit": "percentage"
                     },
                     "rta": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     }
                 }
             }
@@ -29,7 +29,7 @@
                         "unit": "percentage"
                     },
                     "rta": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     }
                 }
             }
@@ -48,7 +48,7 @@
                         "unit": "percentage"
                     },
                     "rta": {
-                        "unit": "milliseconds"
+                        "unit": "seconds"
                     }
                 }
             }
