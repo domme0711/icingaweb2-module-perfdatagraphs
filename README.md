@@ -5,8 +5,9 @@
 Icinga Web Module for Performance Data Graphs. This module enables graphs on the Host and Service Detail View for
 the respective performance data.
 
-![Graphs Light](doc/_images/screenshot_light.png)
-![Graphs Dark](doc/_images/screenshot_dark.png)
+<img src="https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs/raw/main/doc/_images/screenshot_light.png" alt="Icinga Performance Data Graphs Light Mode">
+
+<img src="https://github.com/NETWAYS/icingaweb2-module-perfdatagraphs/raw/main/doc/_images/screenshot_dark.png" alt="Icinga Performance Data Graphs Dark Mode">
 
 The data is fetched by a "backend module", at least one backend module also need to be enabled:
 
