@@ -45,7 +45,8 @@
                 }
             });
 
-            this.on('rendered', '#main > .icinga-module', this.rendered, this);
+            // TODO: The 'rendered' selectors might not yet be optimal.
+            this.on('rendered', '#main > .icinga-module, #main > .container', this.rendered, this);
             this.on('click', '.perfdata-charts a.action-link[data-duration]', this.onTimeClick, this);
         }
 
