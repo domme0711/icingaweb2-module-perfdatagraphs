@@ -1,0 +1,17 @@
+{
+    "ServiceTemplate": {
+        "perfdatagraphs_disk": {
+	    "check_command": "disk",
+            "fields": [],
+            "object_name": "perfdatagraphs_disk",
+            "object_type": "template",
+            "vars": {
+                "perfdatagraphs_metrics": {
+                    "*": {
+                        "unit": "bytes"
+                    }
+                }
+            }
+        }
+    }
+}
