@@ -47,6 +47,11 @@ class PerfdataGraphsConfigForm extends ConfigForm
             'label' => 'Default Time Range (ISO8601 duration)'
         ]);
 
+        $this->addElement('number', 'perfdatagraphs_cache_lifetime', [
+            'label' => t('Cache lifetime in seconds'),
+            'description' => t('How long the data for the charts will be cached by the client.'),
+        ]);
+
         $backends = $this->listBackends();
         $choose = ['' => sprintf(' - %s - ', t('Please choose'))];
 
