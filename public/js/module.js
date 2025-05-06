@@ -498,18 +498,24 @@
 
         /**
          * formatNumber returns exponential format for too low/high numbers, so that the y-axis does not grow endlessly.
+         * A suffix can be passed to have details in the axis.
          */
-        formatNumber(n)
+        formatNumber(n, suffix)
         {
             if (n == 0) {
                 return 0;
             }
 
-            const str = n.toString();
+            let str = n.toString();
 
             // If the output would be too long we change to exponential
             if (str.length >= 20) {
-                return n.toExponential();
+                str = n.toExponential();
+            }
+
+            // Add suffix if it is defined
+            if (suffix !== undefined) {
+                str = str + ' ' + suffix;
             }
 
             return str;
