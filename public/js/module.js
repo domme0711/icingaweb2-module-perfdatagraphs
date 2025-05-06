@@ -24,7 +24,7 @@
         // Where we store data in between autorefresh
         currentSelect = null;
         currentCursor = null;
-        currentSeriesShow = {1: true};
+        currentSeriesShow = {};
         // Where we store the variable selected and the constant timerange
         duration = '';
         defaultDuration = '';
@@ -73,7 +73,8 @@
                 // an autorefresh and new data is being loaded.
                 // _this.currentSelect = {min: 0, max: 0};
                 _this.currentSelect = null;
-                _this.currentSeriesShow = {1: true};
+                // 1: value, 2: warning, 3: critical
+                _this.currentSeriesShow = {};
                 _this.currentCursor = null;
                 _this.duration = this.defaultDuration;
             }
@@ -409,7 +410,7 @@
 
                         // See if there are series options from the last autorefresh
                         // if so we use them, otherwise the default.
-                        let show = this.currentSeriesShow[idx+1];
+                        let show = this.currentSeriesShow[idx+1] ?? true;
                         // Get the style either from the dataset or from CSS
                         let stroke = dataset.stroke ?? valueColor;
                         let fill = dataset.fill ?? this.ensureRgba(valueColor, 0.3);

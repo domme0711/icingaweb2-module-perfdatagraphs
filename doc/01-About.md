@@ -36,12 +36,6 @@ An option to manually merge metrics into one chart could be added in the future.
 We decided to have a fixed set of time ranges to choose from.
 Having user input for the time ranges would increase the complexity of this module.
 
-### Warning and critical series
-
-If available, the warning and critical series are not shown by default.
-Rationale behind this was, that often times these values are many times higher than
-the performance data values. This would cause the actual values to be almost invisible.
-
 ### Custom variables
 
 We decided to use custom variables for graph configuration.
