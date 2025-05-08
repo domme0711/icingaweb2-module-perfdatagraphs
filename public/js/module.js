@@ -592,10 +592,9 @@
 
             const k = 1000;
             const units = ["bytes", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-            const i = Math.floor(Math.log(n) / Math.log(k));
 
-            const num = n / Math.pow(k, i);
-            const value = num.toFixed(2);
+            const i = Math.floor(Math.log(Math.abs(n)) / Math.log(k));
+            const value = (n / Math.pow(k, i)).toFixed(2);
 
             return `${value} ${units[i]}`;
         }
