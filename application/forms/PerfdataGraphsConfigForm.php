@@ -13,6 +13,9 @@ use Exception;
  */
 class PerfdataGraphsConfigForm extends ConfigForm
 {
+    /**
+     * Initialize the form
+     */
     public function init()
     {
         $this->setName('form_config_perfdatagraphs');
@@ -41,15 +44,16 @@ class PerfdataGraphsConfigForm extends ConfigForm
      */
     public function createElements(array $formData)
     {
-        // TODO: Add validator
         $this->addElement('text', 'perfdatagraphs_default_timerange', [
             'description' => t('Default time range for the "Current" button. Uses the ISO8601 duration format (e.g. PT2H, P1D). Hint: too small a value may result in invalid data'),
-            'label' => 'Default Time Range (ISO8601 duration)'
+            'label' => 'Default Time Range (ISO8601 duration)',
+            'placeholder' => 'PT12H',
         ]);
 
         $this->addElement('number', 'perfdatagraphs_cache_lifetime', [
             'label' => t('Cache lifetime in seconds'),
             'description' => t('How long the data for the charts will be cached by the client.'),
+            'placeholder' => 360,
         ]);
 
         $backends = $this->listBackends();
@@ -59,7 +63,6 @@ class PerfdataGraphsConfigForm extends ConfigForm
             'select',
             'perfdatagraphs_default_backend',
             [
-                'required' => true,
                 'label' => $this->translate('Default Data Backend'),
                 'description' => $this->translate('Default backend for the performance data graphs. With only one backend is installed, it will be used by default.'),
                 'multiOptions' => array_merge($choose, array_combine($backends, $backends)),
