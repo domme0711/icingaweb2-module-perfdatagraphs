@@ -74,7 +74,7 @@ class CustomVarsHelper
         foreach ($object->customvars as $key => $value) {
             // We are only interested in our custom vars
             if (str_starts_with($key, self::CUSTOM_VAR_CONFIG_PREFIX)) {
-                $result[$value] = json_decode($value, true) ?? $value;
+                $result[$key] = json_decode($value, true) ?? $value;
             }
         }
 
@@ -105,7 +105,7 @@ class CustomVarsHelper
         foreach ($object->customvars as $key => $value) {
             // We are only interested in our custom vars
             if (str_starts_with($key, self::CUSTOM_VAR_METRICS)) {
-                $result[$value] = json_decode($value, true) ?? $value;
+                $result[$key] = json_decode($value, true) ?? $value;
             }
         }
 
