@@ -67,14 +67,15 @@ class CustomVarsHelper
         // Get the object's custom variables and decode them
         $result = [];
 
-        if (empty($object->customvars)) {
+        $c = $object->customvars;
+        if (empty($c)) {
             return $result;
         }
 
-        foreach ($object->customvars as $key => $value) {
+        foreach ($c as $key => $value) {
             // We are only interested in our custom vars
             if (str_starts_with($key, self::CUSTOM_VAR_CONFIG_PREFIX)) {
-                $result[$key] = json_decode($value, true) ?? $value;
+                $result[$key] = $value;
             }
         }
 
@@ -97,18 +98,36 @@ class CustomVarsHelper
 
         $result = [];
 
-        if (empty($object->customvars)) {
+        $c = $object->customvars;
+        if (empty($c)) {
             return $result;
         }
 
         // Get the object's custom variables and decode them
-        foreach ($object->customvars as $key => $value) {
+        foreach ($c as $key => $value) {
             // We are only interested in our custom vars
             if (str_starts_with($key, self::CUSTOM_VAR_METRICS)) {
-                $result[$key] = json_decode($value, true) ?? $value;
+                // Since these custom vars are dictionaries, we parse them into an array of arrays
+                $result[$key] = $this->objectToArray($value);
             }
         }
 
         return $result[self::CUSTOM_VAR_METRICS] ?? [];
+    }
+
+    /**
+     * Transform stdClass into array recursively
+     */
+    public function objectToArray($data)
+    {
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+
+        if (is_array($data)) {
+            return array_map([$this, 'objectToArray'], $data);
+        }
+
+        return $data;
     }
 }
