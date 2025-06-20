@@ -280,7 +280,20 @@
             // can then be combined with individual options e.g. the width.
             const opts = {
                 cursor: { sync: { key: 0, setSeries: true } },
-                scales: { x: { time: true } },
+                scales: {
+                    x: { time: true },
+                    y: { range: {
+                            min: {
+                                soft: 0,
+                                mode: 1,
+                            },
+                            max: {
+                                soft: 0,
+                                mode: 2,
+                            },
+                        }
+                    },
+                },
                 // series holds the config of each dataset, such as visibility, styling,
                 // labels & value display in the legend
                 series: [ {} ],
