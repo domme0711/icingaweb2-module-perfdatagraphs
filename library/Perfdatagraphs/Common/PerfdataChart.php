@@ -111,13 +111,7 @@ trait PerfdataChart
 
         $datasets = [];
 
-        // Ensure labels have a predictable order
-        $sets = $response->getDatasets();
-        uasort($sets, function ($a, $b) {
-            return strnatcmp($a->getTitle(), $b->getTitle());
-        });
-
-        foreach ($sets as $dataset) {
+        foreach ($response->getDatasets() as $dataset) {
             // If the filter param is set, we only use the dataset when the label matches
             if (count($filter) > 0) {
                 if (!in_array($dataset->getTitle(), $filter)) {
