@@ -1,11 +1,16 @@
 # Changelog
 
+## v0.4.1
+
+- Fix inconsistent order of graphs, metrics are now sorted using strnatcmp
+- Small improvement on how custom variables are processed
+
 ## v0.4.0
 
 - Change default render behavior to only show a limited number charts and add a Tab to all charts.
   This avoids the page being overloaded by charts. The number of charts on the object page is configurable
 - Add dedicated page to show all charts for a given host/service that can be used in a Dashboard
-- Add check_intervall to PerfdataRequest
+- Add check_interval to PerfdataRequest
 - Fix some missing translation hooks
 
 ## v0.3.2
@@ -15,7 +20,7 @@
 
 ## v0.3.1
 
-- Fix percent unit not being formated
+- Fix percent unit not being formatted
 - Fix toggle show not surviving autorefresh
 
 ## v0.3.0

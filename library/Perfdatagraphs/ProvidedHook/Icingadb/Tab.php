@@ -108,6 +108,14 @@ class Tab extends TabHook
 
         $response = $source->fetch($request, $customVarsMetrics);
 
+        // Ensure labels have a predictable order
+        $sets = $response->getDatasets();
+        uasort($sets, function ($a, $b) {
+            return strnatcmp($a->getTitle(), $b->getTitle());
+        });
+
+        $response->setDatasets($sets);
+
         $limit = -1;
         $chart = $this->createChart(request: $request, response: $response, filter: $labels, limit: $limit);
         $content[] = HtmlString::create($chart);
