@@ -115,22 +115,14 @@ class IcingaObjectHelper
      */
     public function getPerfdataGraphsConfigForObject(Model $object): array
     {
-        $data = [];
-
         if (empty($object)) {
-            return $data;
+            return [];
         }
 
-        // Get the object's custom variables and decode them
-        $customvars = $object->customvar->columns(['name', 'value']);
-
-        $result = [];
-        foreach ($customvars as $row) {
-            // We are only interested in our custom vars
-            if (str_starts_with($row->name, self::CUSTOM_VAR_CONFIG_PREFIX)) {
-                $result[$row->name] = json_decode($row->value, true) ?? $row->value;
-            }
-        }
+        // We are only interested in our custom vars
+        $result = array_filter($object->customvars, function ($key) {
+            return str_starts_with($key, self::CUSTOM_VAR_CONFIG_PREFIX);
+        }, ARRAY_FILTER_USE_KEY);
 
         return $result;
     }
@@ -143,23 +135,12 @@ class IcingaObjectHelper
      */
     public function getPerfdataGraphsMetricsForObject(Model $object): array
     {
-        $data = [];
-
         if (empty($object)) {
-            return $data;
+            return [];
         }
 
-        // Get the object's custom variables and decode them
-        $customvars = $object->customvar->columns(['name', 'value']);
+        $result = $object->customvars[self::CUSTOM_VAR_METRICS] ?? [];
 
-        $result = [];
-        foreach ($customvars as $row) {
-            // We are only interested in our custom vars
-            if ($row->name === self::CUSTOM_VAR_METRICS) {
-                $result[$row->name] = json_decode($row->value, true) ?? $row->value;
-            }
-        }
-
-        return $result[self::CUSTOM_VAR_METRICS] ?? [];
+        return $result;
     }
 }
