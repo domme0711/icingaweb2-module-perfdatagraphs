@@ -96,6 +96,14 @@ class DetailviewExtension extends DetailviewExtensionHook
 
         $response = $source->fetch($request, $customVarsMetrics);
 
+        // Ensure labels have a predictable order
+        $sets = $response->getDatasets();
+        uasort($sets, function ($a, $b) {
+            return strnatcmp($a->getTitle(), $b->getTitle());
+        });
+
+        $response->setDatasets($sets);
+
         // If the a dataset is set to be highlighted, move it at the top of the array.
         if ($customvars[$cvh::CUSTOM_VAR_CONFIG_HIGHLIGHT] ?? false) {
             $response->setDatasetToHighlight($customvars[$cvh::CUSTOM_VAR_CONFIG_HIGHLIGHT] ?? '');
