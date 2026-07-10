@@ -104,7 +104,10 @@ class PerfdataSource
         // TODO: We could use the HTTP Cache-Control Header to invalidate cache
         $cacheDurationInSeconds = $this->config['cache_lifetime'];
         $h = $request->isHostCheck() ? 'true': 'false';
-        $cacheKey = base64_encode($request->getHostname() . $request->getServicename() . $request->getCheckcommand() . $request->getDuration() . $h);
+
+        // We use a faster non-cryptographic hash, since we don't do crypto here, we just need stable names here
+        // In the future we should switch to an xxHash algorithm, I wanted to keep PHP8.0 compatibility for now.
+        $cacheKey = hash('md5', base64_encode($request->getHostname() . $request->getServicename() . $request->getCheckcommand() . $request->getDuration() . $h));
 
         // Get data from cache if it is available
         $response = $this->getDataFromCache($cacheKey, $cacheDurationInSeconds);
