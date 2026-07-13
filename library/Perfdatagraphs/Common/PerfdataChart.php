@@ -34,7 +34,9 @@ trait PerfdataChart
     private function generateID(string $hostName, string $serviceName, string $checkCommandName): string
     {
         // Since there might be whatever in the names.
-        return rtrim(base64_encode(sprintf('%s-%s-%s', $hostName, $serviceName, $checkCommandName)), '=');
+        // We use a faster non-cryptographic hash, since we don't do crypto here, we just need stable names here.
+        // In the future we should switch to an xxHash algorithm, I wanted to keep PHP8.0 compatibility for now.
+        return hash('md5', sprintf('%s-%s-%s', $hostName, $serviceName, $checkCommandName));
     }
 
     /**
