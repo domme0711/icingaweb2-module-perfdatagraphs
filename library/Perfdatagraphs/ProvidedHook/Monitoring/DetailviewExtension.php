@@ -37,7 +37,7 @@ class DetailviewExtension extends DetailviewExtensionHook
             $checkCommandName = $object->check_command;
             $checkInterval = intval($object->service_check_interval);
         } else {
-            // Unecessary but just to be safe.
+            // Just to be safe.
             return Html::tag('div');
         }
 
