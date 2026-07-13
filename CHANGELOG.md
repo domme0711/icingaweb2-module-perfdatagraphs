@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.2
+
+- Fix FileCache filename encoding may contain slashes
+
 ## v0.4.1
 
 - Fix inconsistent order of graphs, metrics are now sorted using strnatcmp
