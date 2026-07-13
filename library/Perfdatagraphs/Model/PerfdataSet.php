@@ -25,7 +25,7 @@ class PerfdataSet implements JsonSerializable
      /** @var string Display this dataset's thresholds or not */
     protected bool $showThresholds = true;
 
-    /** @var iterable The timstamps for this dataset */
+    /** @var iterable The timestamps for this dataset */
     protected iterable $timestamps = [];
 
     /** @var array Associative array of PerfdataSeries for this dataset with their name as key */

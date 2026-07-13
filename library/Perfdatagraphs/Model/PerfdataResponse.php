@@ -126,7 +126,7 @@ class PerfdataResponse implements JsonSerializable
     }
 
     /**
-     * addDataset adds a new PerfdataSet (which respresents a single chart in the frontend).
+     * addDataset adds a new PerfdataSet (which represents a single chart in the frontend).
      *
      * @param PerfdataSet $ds the dataset to add
      * @return void
