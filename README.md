@@ -30,7 +30,7 @@ Configuration options are limited by design.
 
 ## Installation Requirements
 
-* PHP version ≥ 8.0
+* PHP version ≥ 8.2
 * IcingaDB or IDO Database
 
 ## Documentation
