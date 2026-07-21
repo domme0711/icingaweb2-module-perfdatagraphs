@@ -50,31 +50,31 @@ class PerfdataSet implements JsonSerializable
     {
         $d = [];
 
-        if (isset($this->title)) {
+        if (!empty($this->title)) {
             $d['title'] = $this->title;
         }
 
-        if (isset($this->unit)) {
+        if (!empty($this->unit)) {
             $d['unit'] = $this->unit;
         }
 
-        if (isset($this->fill)) {
+        if (!empty($this->fill)) {
             $d['fill'] = $this->fill;
         }
 
-        if (isset($this->stroke)) {
+        if (!empty($this->stroke)) {
             $d['stroke'] = $this->stroke;
         }
 
-        if (isset($this->showThresholds)) {
+        if ($this->showThresholds === true) {
             $d['show_thresholds'] = $this->showThresholds;
         }
 
-        if (isset($this->timestamps)) {
+        if (!empty($this->timestamps)) {
             $d['timestamps'] = $this->timestamps;
         }
 
-        if (isset($this->series)) {
+        if (!empty($this->series)) {
             $d['series'] = array_values($this->series);
         }
         return $d;
@@ -91,13 +91,10 @@ class PerfdataSet implements JsonSerializable
             return true;
         }
 
-        $sets = [];
         foreach ($this->series as $s) {
-            $sets[] = $s->isEmpty();
-        }
-
-        if (in_array(true, $sets, true)) {
-            return true;
+            if ($s->isEmpty()) {
+                return true;
+            }
         }
 
         return false;
@@ -253,11 +250,7 @@ class PerfdataSet implements JsonSerializable
      */
     public function getSeriesByName(string $name): ?PerfdataSeries
     {
-        if (array_key_exists($name, $this->series)) {
-            return $this->series[$name];
-        }
-
-        return null;
+        return $this->series[$name] ?? null;
     }
 
     /**

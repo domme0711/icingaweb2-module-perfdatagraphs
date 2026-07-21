@@ -58,7 +58,8 @@ class PerfdataSeries implements JsonSerializable
     }
 
     /**
-     * addValue adds a value to the series
+     * addValue adds a value to the series.
+     * Cannot be used with SplFixedArray.
      *
      * @param mixed $value
      * @return void
