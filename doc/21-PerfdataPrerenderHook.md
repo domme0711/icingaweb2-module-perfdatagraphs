@@ -3,6 +3,9 @@
 The module provides a hook to modify data after it has been fetched from the backend.
 This can be useful if you have special cases that the module does not cover.
 
+The hook is called after the data has been fetched from the backend and the customvars have been merged, right before
+the data is stored in the FileCache.
+
 ## PerfdataPrerenderHook
 
 You need to create an Icinga Web Module that implements the `PerfdataPrerenderHook` provided by this module here.

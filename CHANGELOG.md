@@ -7,7 +7,8 @@
 - Make jitter for gaps flexible, it now uses 10% of the inverval
 - Add label selection to Tab view, this selection is hidden on dashboards
 - Add PerfdataPrerenderHook to transform data in custom Icinga Web modules
-- Replace iterable type with union type in model. Uses `array|\SplFixedArray` now.
+- Add `getSeriesByName` method to PerfdataSet class
+- Replace iterable type with union type in model (uses `array|\SplFixedArray` now).
 
 ## v0.4.2
 

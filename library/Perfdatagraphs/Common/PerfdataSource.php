@@ -119,15 +119,17 @@ class PerfdataSource
             // We could have also done this browser-side but decided to do this here
             // because of simpler testability.
             $response->mergeCustomVars($customVarsMetrics);
-            $this->storeDataToCache($cacheKey, $response);
-        }
 
-        foreach (Hook::all('perfdatagraphs/PerfdataPrerender') as $prerender) {
-            try {
-                $response = $prerender->transform($response);
-            } catch (Throwable $e) {
-                Logger::error("Failed to call Perfdatagraphs Prerender Hook: %s", $e);
+            // Call all prerender Hooks before the data is stored in the cache
+            foreach (Hook::all('perfdatagraphs/PerfdataPrerender') as $prerender) {
+                try {
+                    $response = $prerender->transform($response);
+                } catch (Throwable $e) {
+                    Logger::error("Failed to call Perfdatagraphs Prerender Hook: %s", $e);
+                }
             }
+
+            $this->storeDataToCache($cacheKey, $response);
         }
 
         return $response;
