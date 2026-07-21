@@ -38,9 +38,13 @@ This object represents a single chart in the frontend (e.g. `pl` are `rta` for t
 
 A PerfdataSet can contain multiple PerfdataSeries.
 
+Note, this objects can use `array|SplFixedArray`.
+
 **PerfdataSeries**
 
 This object represents a single series (y-axis) on the chart (e.g. warning, critical, values).
+
+Note, this objects can use `array|SplFixedArray`.
 
 ### PerfdataRequest
 
