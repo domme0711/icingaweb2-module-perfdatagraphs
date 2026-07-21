@@ -61,6 +61,13 @@ increase the complexity of this module.
 
 An option to manually merge metrics into one chart could be added in the future.
 
+### Important charts in the Object details, all charts in the Tab
+
+The idea is that the Object detail view shows you important metrics,
+that is why we have parameters to adjust what is displayed there.
+
+The Tab shows all available metrics unconditionally.
+
 ### Gaps when there is no data
 
 If there is missing data, the chart will show gaps and will not connect the data points to avoid misinterpretation.
