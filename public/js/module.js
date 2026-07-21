@@ -61,7 +61,7 @@
          */
         rendered(event, isAutorefresh)
         {
-            let _this = event.data.self;
+            const _this = event.data.self;
 
             if (!isAutorefresh) {
                 _this.icinga.logger.debug('perfdatagraphs', 'not an autorefresh. resetting');
@@ -76,6 +76,8 @@
 
             // Remove leftover eventhandlers and uPlot instances
             _this.plots.forEach((plot, element) => {
+                _this.resizeObserver.unobserve(element);
+                _this.intersectionObserver.unobserve(element);
                 plot.destroy();
             });
             // Then, reset the existing plots map for the new rendering
@@ -105,6 +107,28 @@
                 // If you change this, remember to also change the collapsible height.
                 height: 200,
             };
+        }
+
+        /**
+         * getRequestedRange reads the data-duration attribute
+         * from the given chart element, if present.
+         * The backend sets this value based on the requested duration.
+         * Returns the [min, max] range for the plot.
+         */
+        getRequestedRange(elem)
+        {
+            const duration = elem.getAttribute('data-duration');
+
+            const max = Math.floor(Date.now() / 1000);
+
+            if (duration === null || duration === '') {
+                return [null, max];
+            }
+
+            const parsedDuration = parseInt(duration, 10);
+            const min = Number.isFinite(parsedDuration) ? parsedDuration : null;
+
+            return [min, max];
         }
 
         /**
@@ -159,7 +183,7 @@
          * getChartOptions returns shared base options for all charts.
          * These will get merged with individual options (e.g. axes config).
          */
-        getChartBaseOptions()
+        getChartBaseOptions(elem)
         {
             // Options for formatting datetime
             const timezone = this.icinga.config.timezone;
@@ -175,7 +199,16 @@
                     return uPlot.fmtDate(tplNew)
                 },
                 scales: {
-                    x: { time: true },
+                    x: {
+                        time: true,
+                        range: (u, min, max) => {
+                            const range = this.getRequestedRange(elem);
+                            if (range[0] !== null && this.currentSelect === null) {
+                                return range;
+                            }
+                            return [min, max];
+                        }
+                    },
                     y: { range: {
                             min: {
                                 soft: 0,
@@ -199,9 +232,14 @@
                     init: [
                         u => {
                             u.over.ondblclick = e => {
-                                // We need to reset the currentSelect to the min/max
-                                // when we zoom out again.
+                                // We need to reset the currentSelect to the min/max to zoom out
                                 this.currentSelect = {min: 0, max: 0};
+                                const range = this.getRequestedRange(elem);
+                                if (range[0] !== null) {
+                                    this.plots.forEach(plot => {
+                                        plot.setScale('x', { min: range[0], max: range[1] });
+                                    });
+                                }
                             }
                         }
                     ],
@@ -247,17 +285,24 @@
             const criticalColor = $('div.critical-color').css('background-color');
             const valueColor = $('div.value-color').css('background-color');
             // These are the shared options for all charts
-            const baseOpts = this.getChartBaseOptions();
 
             this.icinga.logger.debug('perfdatagraphs', 'start renderCharts');
 
             for (let elem of lineCharts) {
                 this.icinga.logger.debug('perfdatagraphs', 'rendering for', elem);
 
-                const dataset = JSON.parse(elem.getAttribute('data-perfdata'));
+                let dataset;
+
+                try {
+                    dataset = JSON.parse(elem.getAttribute('data-perfdata'));
+                } catch (e) {
+                    this.icinga.logger.error('perfdatagraphs', 'Failed to parse perfdata', elem, e);
+                    continue;
+                }
 
                 // The size can vary from chart to chart for example when
                 // there are two contains on the page.
+                const baseOpts = this.getChartBaseOptions(elem);
                 let opts = {...baseOpts, ...this.getChartSize(elem.offsetWidth)};
 
                 // Add each element to the resize observer so that we can
@@ -272,7 +317,7 @@
                 elem.replaceChildren();
 
                 // Create a new uplot chart for each performance dataset
-                dataset.timestamps = this.ensureArray(dataset.timestamps);
+
                 // Base format function for the y-axis
                 let formatYFunction = (u, vals, space) => vals.map(v => this.formatNumber(v));
                 // Override the default uplot callback so that smaller values are
@@ -314,8 +359,7 @@
                 // Using a 'classic' for loop since we need the index
                 for (let idx = 0; idx < dataset.series.length; idx++) {
                     // // The series we are going to add (e.g. values, warn, crit, etc.)
-                    let set = dataset.series[idx].values;
-                    set = this.ensureArray(set);
+                    const set = dataset.series[idx].values;
 
                     // We show all series by default unless warn/crit have show_thresholds to false
                     const defaultShow = dataset.series[idx].name === CHART_WARN_SERIESNAME || dataset.series[idx].name === CHART_CRIT_SERIESNAME
@@ -416,20 +460,6 @@
         }
 
         /**
-         * ensureArray ensures the given object is an Array.
-         * It will transform Objects if possible.
-         * A dirty PHP 8.0 hack since I sometimes used SplFixedArray.
-         * Can be removed once PHP 8.0 is ancient history.
-         */
-        ensureArray(obj) {
-            if (typeof obj === 'object' && !Array.isArray(obj)) {
-                return Object.values(obj);
-            }
-
-            return obj;
-        }
-
-        /**
          * Translate a given rgb() string into rgba().
          * Used for the fill of the chart.
          */
@@ -457,7 +487,7 @@
          */
         formatNumber(n, suffix)
         {
-            if (n == 0) {
+            if (n === 0) {
                 return 0;
             }
 
@@ -533,6 +563,9 @@
             } else if (Math.abs(n) < 31536000) {
                 value = n / 604800;
                 return `${value.toFixed(2)} weeks`;
+            } else {
+                value = n / 31536000;
+                return `${value.toFixed(2)} years`;
             }
         }
 
@@ -569,7 +602,7 @@
             // if there is a change in deltas.
             let previousDelta = 60; // We start at 60 since 1m is Icinga2's default
             // Since check_interval is not perfect, we expect some jitter
-            const jitter = 5; // I chose 5 arbitrarily
+            let jitter = 6; // 10% of 60
             // Just for convenience
             const isNum = Number.isFinite;
 
@@ -588,6 +621,7 @@
                     }
 
                     previousDelta = currentDelta;
+                    jitter = previousDelta * 0.1;
                 }
             }
 

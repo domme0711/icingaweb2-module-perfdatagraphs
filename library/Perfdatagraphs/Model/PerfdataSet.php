@@ -25,8 +25,8 @@ class PerfdataSet implements JsonSerializable
      /** @var string Display this dataset's thresholds or not */
     protected bool $showThresholds = true;
 
-    /** @var iterable The timestamps for this dataset */
-    protected iterable $timestamps = [];
+    /** @var array|\SplFixedArray The timestamps for this dataset */
+    protected array|\SplFixedArray $timestamps = [];
 
     /** @var array Associative array of PerfdataSeries for this dataset with their name as key */
     protected array $series = [];
@@ -50,31 +50,31 @@ class PerfdataSet implements JsonSerializable
     {
         $d = [];
 
-        if (isset($this->title)) {
+        if (!empty($this->title)) {
             $d['title'] = $this->title;
         }
 
-        if (isset($this->unit)) {
+        if (!empty($this->unit)) {
             $d['unit'] = $this->unit;
         }
 
-        if (isset($this->fill)) {
+        if (!empty($this->fill)) {
             $d['fill'] = $this->fill;
         }
 
-        if (isset($this->stroke)) {
+        if (!empty($this->stroke)) {
             $d['stroke'] = $this->stroke;
         }
 
-        if (isset($this->showThresholds)) {
+        if ($this->showThresholds === true) {
             $d['show_thresholds'] = $this->showThresholds;
         }
 
-        if (isset($this->timestamps)) {
+        if (!empty($this->timestamps)) {
             $d['timestamps'] = $this->timestamps;
         }
 
-        if (isset($this->series)) {
+        if (!empty($this->series)) {
             $d['series'] = array_values($this->series);
         }
         return $d;
@@ -91,13 +91,10 @@ class PerfdataSet implements JsonSerializable
             return true;
         }
 
-        $sets = [];
         foreach ($this->series as $s) {
-            $sets[] = $s->isEmpty();
-        }
-
-        if (in_array(true, $sets, true)) {
-            return true;
+            if ($s->isEmpty()) {
+                return true;
+            }
         }
 
         return false;
@@ -247,6 +244,16 @@ class PerfdataSet implements JsonSerializable
     }
 
     /**
+     * getSeriesByName gets the requested series of this dataset.
+     *
+     * @return PerfdataSeries The series of this dataset
+     */
+    public function getSeriesByName(string $name): ?PerfdataSeries
+    {
+        return $this->series[$name] ?? null;
+    }
+
+    /**
      * setSeries overrides the series of this dataset.
      *
      * @param array $series the series for this dataset
@@ -276,17 +283,15 @@ class PerfdataSet implements JsonSerializable
      */
     public function removeSeries(string $name): void
     {
-        if (array_key_exists($name, $this->series)) {
-            unset($this->series[$name]);
-        }
+        unset($this->series[$name]);
     }
 
     /**
      * getTimestamps gets the timestamps of this dataset.
      *
-     * @return iterable the timestamps of this dataset
+     * @return array|\SplFixedArray the timestamps of this dataset
      */
-    public function getTimestamps(): iterable
+    public function getTimestamps(): array|\SplFixedArray
     {
         return $this->timestamps;
     }
@@ -294,10 +299,10 @@ class PerfdataSet implements JsonSerializable
     /**
      * setTimestamps sets the timestamps for this dataset.
      *
-     * @param iterable $ts
+     * @param array|\SplFixedArray $ts
      * @return void
      */
-    public function setTimestamps(iterable $ts): void
+    public function setTimestamps(array|\SplFixedArray $ts): void
     {
         $this->timestamps = $ts;
     }

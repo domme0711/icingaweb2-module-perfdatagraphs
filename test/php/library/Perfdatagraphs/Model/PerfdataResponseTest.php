@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PerfdataResponseTest extends TestCase
 {
-    public function test_perfdataseries_isEmpty()
+    public function test_perfdataseries_isEmpty_WithSPL()
     {
         $actual = new PerfdataSeries('ps', [1,2]);
         $this->assertFalse($actual->isEmpty());
@@ -36,7 +36,7 @@ final class PerfdataResponseTest extends TestCase
         $this->assertFalse($actual->isEmpty());
     }
 
-    public function test_perfdataset_isEmpty()
+    public function test_perfdataset_isEmpty_WithArray()
     {
         $actual = new PerfdataSet('myset', 'theunit');
         $s1 = new PerfdataSeries('foo', [1,2]);
@@ -77,7 +77,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->addError('WRONG!');
 
-        $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":["WRONG!"],"data":[{"title":"myset","unit":"theunit","show_thresholds":true,"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertFalse($pfr->isValid());
@@ -102,7 +102,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->mergeCustomVars([]);
 
-        $expected = '{"errors":[],"data":[{"title":"myset","unit":"theunit","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset","unit":"theunit","show_thresholds":true,"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertFalse($pfr->isValid());
@@ -134,7 +134,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->mergeCustomVars($customvars);
 
-        $expected = '{"errors":[],"data":[{"title":"myset","unit":"load","fill":"rgba(1, 1, 1, 1)","stroke":"rgba(2, 2, 2, 2)","timestamps":[],"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset","unit":"load","fill":"rgba(1, 1, 1, 1)","stroke":"rgba(2, 2, 2, 2)","show_thresholds":true,"series":[{"name":"foo","values":[1,2]},{"name":"bar","values":[3,4]}]}]}';
         $actual = json_encode($pfr);
 
         $this->assertFalse($pfr->isValid());
@@ -167,14 +167,17 @@ final class PerfdataResponseTest extends TestCase
         $pfr = new PerfdataResponse();
 
         $ds1 = new PerfdataSet('myset1', 'theunit1');
+        $ds1->setTimestamps([44,55]);
         $ds2 = new PerfdataSet('myset2', 'theunit2');
+        $ds2->setTimestamps([66,77]);
         $ds3 = new PerfdataSet('myset3', 'theunit3');
+        $ds3->setTimestamps([88,99]);
 
         $pfr->addDataset($ds1);
         $pfr->addDataset($ds2);
         $pfr->addDataset($ds3);
 
-        $expected = '{"errors":[],"data":[{"title":"myset1","unit":"theunit1","timestamps":[],"series":[]},{"title":"myset2","unit":"theunit2","timestamps":[],"series":[]},{"title":"myset3","unit":"theunit3","timestamps":[],"series":[]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset1","unit":"theunit1","show_thresholds":true,"timestamps":[44,55]},{"title":"myset2","unit":"theunit2","show_thresholds":true,"timestamps":[66,77]},{"title":"myset3","unit":"theunit3","show_thresholds":true,"timestamps":[88,99]}]}';
         $actual = json_encode($pfr);
         $this->assertEquals($expected, $actual);
 
@@ -182,7 +185,7 @@ final class PerfdataResponseTest extends TestCase
 
         $pfr->setDatasetToHighlight('myset3');
 
-        $expected = '{"errors":[],"data":[{"title":"myset3","unit":"theunit3","timestamps":[],"series":[]},{"title":"myset1","unit":"theunit1","timestamps":[],"series":[]},{"title":"myset2","unit":"theunit2","timestamps":[],"series":[]}]}';
+        $expected = '{"errors":[],"data":[{"title":"myset3","unit":"theunit3","show_thresholds":true,"timestamps":[88,99]},{"title":"myset1","unit":"theunit1","show_thresholds":true,"timestamps":[44,55]},{"title":"myset2","unit":"theunit2","show_thresholds":true,"timestamps":[66,77]}]}';
         $actual = json_encode($pfr);
         $this->assertEquals($expected, $actual);
     }

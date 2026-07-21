@@ -3,6 +3,7 @@
 namespace Icinga\Module\Perfdatagraphs\Model;
 
 use JsonSerializable;
+use SplFixedArray;
 
 /**
  * PerfdataSeries represents a single series (y-axis) on the chart.
@@ -12,14 +13,14 @@ class PerfdataSeries implements JsonSerializable
      /** @var string The name for this series */
     protected string $name;
 
-     /** @var iterable The values for this series */
-    protected iterable $values = [];
+     /** @var array|\SplFixedArray The values for this series */
+    protected array|\SplFixedArray $values;
 
     /**
      * @param string $name
-     * @param iterable $values
+     * @param array|\SplFixedArray $values
      */
-    public function __construct(string $name, iterable $values = [])
+    public function __construct(string $name, array|\SplFixedArray $values = [])
     {
         $this->name = $name;
         $this->values = $values;
@@ -49,15 +50,16 @@ class PerfdataSeries implements JsonSerializable
     /**
      * getValues returns the values for the series
      *
-     * @return iterable
+     * @return array|\SplFixedArray
      */
-    public function getValues(): iterable
+    public function getValues(): array|\SplFixedArray
     {
         return $this->values;
     }
 
     /**
-     * addValue adds a value to the series
+     * addValue adds a value to the series.
+     * Cannot be used with SplFixedArray.
      *
      * @param mixed $value
      * @return void
@@ -70,10 +72,10 @@ class PerfdataSeries implements JsonSerializable
     /**
      * setValues sets the values for the series
      *
-     * @param iterable $values
+     * @param array|\SplFixedArray $values
      * @return void
      */
-    public function setValues(iterable $values): void
+    public function setValues(array|\SplFixedArray $values): void
     {
         $this->values = $values;
     }
@@ -85,17 +87,10 @@ class PerfdataSeries implements JsonSerializable
      */
     public function jsonSerialize(): mixed
     {
-        $d = [];
-
-        if (isset($this->name)) {
-            $d['name'] = $this->name;
-        }
-
-        if (isset($this->values)) {
-            $d['values'] = $this->values;
-        }
-
-        return $d;
+        return [
+            'name' => $this->name,
+            'values' => $this->values,
+        ];
     }
 
     /**
@@ -126,7 +121,7 @@ class PerfdataSeries implements JsonSerializable
      */
     public function isValid(): bool
     {
-        if (empty($this->name)) {
+        if ($this->name === '') {
             return false;
         }
 

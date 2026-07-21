@@ -6,6 +6,7 @@ use Icinga\Module\Perfdatagraphs\Model\PerfdataRequest;
 use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 
 use Icinga\Application\Benchmark;
+use Icinga\Application\Hook;
 use Icinga\Application\Logger;
 
 use Exception;
@@ -107,7 +108,7 @@ class PerfdataSource
 
         // We use a faster non-cryptographic hash, since we don't do crypto here, we just need stable names here
         // In the future we should switch to an xxHash algorithm, I wanted to keep PHP8.0 compatibility for now.
-        $cacheKey = hash('md5', base64_encode($request->getHostname() . $request->getServicename() . $request->getCheckcommand() . $request->getDuration() . $h));
+        $cacheKey = hash('xxh128', base64_encode($request->getHostname() . $request->getServicename() . $request->getCheckcommand() . $request->getDuration() . $h));
 
         // Get data from cache if it is available
         $response = $this->getDataFromCache($cacheKey, $cacheDurationInSeconds);
@@ -119,6 +120,14 @@ class PerfdataSource
             // because of simpler testability.
             $response->mergeCustomVars($customVarsMetrics);
             $this->storeDataToCache($cacheKey, $response);
+        }
+
+        foreach (Hook::all('perfdatagraphs/PerfdataPrerender') as $prerender) {
+            try {
+                $response = $prerender->transform($response);
+            } catch (Throwable $e) {
+                Logger::error("Failed to call Perfdatagraphs Prerender Hook: %s", $e);
+            }
         }
 
         return $response;

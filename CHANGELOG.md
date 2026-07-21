@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.0
+
+- Raise minimum requirements to PHP 8.2
+- Fix x-axis not adjusting when no data is available for the selected range
+- Make jitter for gaps flexible, it now uses 10% of the inverval
+- Add label selection to Tab view, this selection is hidden on dashboards
+- Add PerfdataPrerenderHook to transform data in custom Icinga Web modules
+- Replace iterable type with union type in model. Uses `array|\SplFixedArray` now.
+
 ## v0.4.2
 
 - Fix FileCache filename encoding may contain slashes
