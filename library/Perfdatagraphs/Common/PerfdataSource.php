@@ -7,6 +7,7 @@ use Icinga\Module\Perfdatagraphs\Model\PerfdataResponse;
 
 use Icinga\Application\Benchmark;
 use Icinga\Application\Hook;
+use Icinga\Application\Icinga;
 use Icinga\Application\Logger;
 
 use Exception;
@@ -102,7 +103,6 @@ class PerfdataSource
      */
     public function fetch(PerfdataRequest $request, array $customVarsMetrics): PerfdataResponse
     {
-        // TODO: We could use the HTTP Cache-Control Header to invalidate cache
         $cacheDurationInSeconds = $this->config['cache_lifetime'];
         $h = $request->isHostCheck() ? 'true': 'false';
 
@@ -111,7 +111,14 @@ class PerfdataSource
         $cacheKey = hash('xxh128', base64_encode($request->getHostname() . $request->getServicename() . $request->getCheckcommand() . $request->getDuration() . $h));
 
         // Get data from cache if it is available
-        $response = $this->getDataFromCache($cacheKey, $cacheDurationInSeconds);
+        $response = null;
+        // We use the HTTP Cache-Control Header to invalidate cache explicitly
+        $noCacheNotSet = Icinga::app()->getRequest()->getHeader('Cache-Control') === 'no-cache';
+
+        if ($noCacheNotSet) {
+            $response = $this->getDataFromCache($cacheKey, $cacheDurationInSeconds);
+        }
+
         // When there's not cached data, load it via the hook
         if (!$response) {
             $response = $this->fetchViaHook($request);
