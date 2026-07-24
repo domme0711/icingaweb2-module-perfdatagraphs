@@ -1,5 +1,7 @@
 # Development
 
+Note, the module respects the HTTP Header "Cache-Control" (no-cache) to disable the cache.
+
 ## PHPUnit
 
 Install phpunit with composer and see the Makefile for dependency setup.

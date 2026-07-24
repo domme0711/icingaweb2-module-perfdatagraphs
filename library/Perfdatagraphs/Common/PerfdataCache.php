@@ -4,12 +4,29 @@ namespace Icinga\Module\Perfdatagraphs\Common;
 
 use Icinga\Web\FileCache;
 
+use FilesystemIterator;
+
 /**
 * Perfdata is a small wrapper around the FileCache
 * to provide additional features we might require.
 */
 class PerfdataCache extends FileCache
 {
+    /**
+    * clearAll removes all items from the cache
+    */
+    public function clearAll(): void
+    {
+        $iterator = new FilesystemIterator($this->basedir);
+        foreach ($iterator as $file) {
+            if (!$file->isFile()) {
+                continue;
+            }
+
+            $this->clear($file->getFilename());
+        }
+    }
+
     /**
     * clear removes a single item from the cache by its name
     */

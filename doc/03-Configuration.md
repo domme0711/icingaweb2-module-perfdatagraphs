@@ -17,6 +17,8 @@ default_backend = "Graphite"
 cache_lifetime = 9000
 ```
 
+Note, the module respects the HTTP Header "Cache-Control" (no-cache) to disable the cache.
+
 Each individual "backend" module, which is responsible for fetching the data from a performance data backend (Graphite, OpenSearch, Elasticsearch, InfluxDB, etc.), provides its own configuration options.
 
 ## Performance Data Backend
