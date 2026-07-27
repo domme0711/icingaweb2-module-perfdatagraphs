@@ -15,6 +15,8 @@
         // Where we store data in between autorefresh
         currentSelect = null;
         currentCursor = null;
+        // Note, he shown series (value,warning,critical) will be toggled on all charts
+        // similar to the selected time range
         currentSeriesShow = {};
 
         constructor(icinga)
@@ -75,11 +77,9 @@
             }
 
             // Remove leftover eventhandlers and uPlot instances
-            _this.plots.forEach((plot, element) => {
-                _this.resizeObserver.unobserve(element);
-                _this.intersectionObserver.unobserve(element);
-                plot.destroy();
-            });
+            _this.plots.forEach(plot => plot.destroy());
+            _this.resizeObserver.disconnect();
+            _this.intersectionObserver.disconnect();
             // Then, reset the existing plots map for the new rendering
             _this.plots = new Map();
 
@@ -236,6 +236,7 @@
                                 this.currentSelect = {min: 0, max: 0};
                                 const range = this.getRequestedRange(elem);
                                 if (range[0] !== null) {
+                                    // The double-click zoom out is applied to all charts
                                     this.plots.forEach(plot => {
                                         plot.setScale('x', { min: range[0], max: range[1] });
                                     });
@@ -419,6 +420,7 @@
          */
         fmtDate(tpl, locale) {
             const formatter = new Intl.DateTimeFormat(locale);
+            // Note, A bit static, but works for now
             const parts = formatter.formatToParts(new Date(2024, 0, 2));
             // This is generally not optimal but should work for now
             const dateOrder = parts
@@ -470,7 +472,8 @@
             }
 
             // Try to match the rgb format and return with alpha.
-            const rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            const rgbMatch = color.match(/^rgb\((\d+)\s*,?\s*(\d+)\s*,?\s*(\d+)\)$/);
+
             if (!rgbMatch) {
                 // If we match nothing return what was given just to be safe.
                 return color;
@@ -488,7 +491,7 @@
         formatNumber(n, suffix)
         {
             if (n === 0) {
-                return 0;
+                return "0";
             }
 
             let str = n.toString();
@@ -511,7 +514,7 @@
          */
         formatPercentage(n)
         {
-            if (n == 0) {
+            if (n === 0) {
                 return "0.00%";
             }
 
@@ -527,7 +530,7 @@
          */
         formatTimeSeconds(n)
         {
-            if (n == 0) {
+            if (n === 0) {
                 return "0 s";
             }
 
@@ -629,6 +632,24 @@
             nullGaps.sort((a, b) => a[0] - b[0]);
 
             return nullGaps;
+        }
+
+        /**
+         * Allow to destroy and clean up this module
+         */
+        destroy() {
+            // Unobserve all elements
+            this.resizeObserver?.disconnect();
+            this.intersectionObserver?.disconnect();
+            // Reset state
+            this.currentSelect = null;
+            this.currentCursor = null;
+            this.currentSeriesShow = {};
+            // Remove uPlots
+            this.plots.forEach(plot => plot.destroy());
+            this.plots.clear();
+            // Unbind event handler
+            this.off('rendered');
         }
     }
 
